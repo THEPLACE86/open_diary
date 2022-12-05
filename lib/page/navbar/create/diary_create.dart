@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 
 class DiaryCreatePage extends StatefulWidget {
@@ -13,7 +14,7 @@ class DiaryCreatePage extends StatefulWidget {
 class _DiaryCreatePageState extends State<DiaryCreatePage> {
 
   String todayFeel = '선택해 주세요.';
-  final TextEditingController _textController = TextEditingController();
+  final supabase = Supabase.instance.client;
 
   static const mockResults = [
     'dat@gmail.com',
@@ -22,14 +23,29 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
     'datvu@gmail.com'
   ];
 
-  List<String> _values = [];
+  final List<String> _values = [];
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _diaryController = TextEditingController();
 
   _onDelete(index) {
     setState(() {
       _values.removeAt(index);
     });
+  }
+
+  void saveDiary() async {
+    try {
+      await supabase.from('diary').insert({
+        'content': _diaryController.text,
+        'author': 'a20e7289-e63c-4053-9f63-3fc5f8bbaba9',
+      });
+    } on PostgrestException catch (error) {
+      print(error.message);
+      //context.showErrorSnackBar(message: error.message);
+    } catch (_) {
+      //context.showErrorSnackBar(message: unexpectedErrorMessage);
+    }
   }
 
   @override
@@ -40,6 +56,14 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: (){
+              saveDiary();
+            },
+            icon: const Icon(Icons.check_circle, color: Colors.cyan)
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -362,9 +386,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
               ],
             ),
             const SizedBox(height: 15,),
-            const TextField(
+            TextField(
               maxLines: 10,
-              decoration: InputDecoration(
+              controller: _diaryController,
+              decoration: const InputDecoration(
                 labelText: '오늘 나는 ...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
