@@ -40,6 +40,9 @@ dependencies:
   get:
   google_nav_bar:
   super_tag_editor:
+  geolocator:
+  naver_map_plugin:
+  http:
 
 dev_dependencies:
   flutter_test:

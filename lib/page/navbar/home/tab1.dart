@@ -17,12 +17,8 @@ class _Tab1State extends State<Tab1> {
   @override
   void initState() {
     //final myUserId = supabase.auth.currentUser!.id;
-    _diaryStream = supabase
-        .from('diary')
-        .stream(primaryKey: ['id'])
-        .map((maps) => maps
-        .map((map) => DiaryModel.fromMap(map: map))
-        .toList());
+    _diaryStream = supabase.from('diary').stream(primaryKey: ['id']).map((maps) => maps
+        .map((map) => DiaryModel.fromMap(map: map)).toList());
     super.initState();
   }
 
@@ -84,15 +80,17 @@ class _Tab1State extends State<Tab1> {
                     padding: const EdgeInsets.only(left: 25, right: 25),
                     child: Text(data.content, maxLines: 3,),
                   ),
+                  data.location != '위치없음' ?
                   Padding(
                     padding: const EdgeInsets.only(top: 10, left: 25),
                     child: Row(
-                      children: const [
-                        Text('경기도 고양시 덕양구 덕은동',style: TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
-                        Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+                      children: [
+                        Text(data.location,style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
+                        const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
                       ],
                     ),
-                  ),
+                  ): Container(),
+
                   Padding(
                     padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
                     child: Row(

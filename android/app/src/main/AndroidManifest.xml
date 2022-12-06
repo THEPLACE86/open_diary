@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.theplace.open_diary.open_diary">
+    package="com.theplace.open_diary">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
    <application
         android:label="open_diary"
         android:name="${applicationName}"
@@ -30,5 +34,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+       <meta-data
+           android:name="com.naver.maps.map.CLIENT_ID"
+           android:value="h7gtjkv92c"/>
+
     </application>
 </manifest>

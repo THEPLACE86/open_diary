@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'dart:convert';
 
 class DiaryCreatePage extends StatefulWidget {
   const DiaryCreatePage({Key? key}) : super(key: key);
@@ -14,6 +18,7 @@ class DiaryCreatePage extends StatefulWidget {
 class _DiaryCreatePageState extends State<DiaryCreatePage> {
 
   String todayFeel = '선택해 주세요.';
+  String location = '위치 검색중..';
   final supabase = Supabase.instance.client;
 
   static const mockResults = [
@@ -28,6 +33,44 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   final TextEditingController _textEditingController = TextEditingController();
   final TextEditingController _diaryController = TextEditingController();
 
+  void fetchData() async {
+    LocationPermission permission = await Geolocator.requestPermission(); //오류 해결 코드
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    //현재위치를 position이라는 변수로 저장
+    String lat = position.latitude.toString();
+    String lon = position.longitude.toString();
+    //위도와 경도를 나눠서 변수 선언
+    print(lat);
+    print(lon);
+    // 잘 나오는지 확인!
+    Map<String,String> headers = {
+      "X-NCP-APIGW-API-KEY-ID": "h7gtjkv92c", // 개인 클라이언트 아이디
+      "X-NCP-APIGW-API-KEY": "fidpcKEkyxqEnmCRAErXGgKSQJe5mYRWBcGeiTda" // 개인 시크릿 키
+    };
+
+    http.Response response = await http.get(
+        Uri.parse(
+            "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=$lon,$lat&sourcecrs=epsg:4326&output=json"),
+        headers: headers
+    );
+
+    String jsonData = response.body;
+
+    var myJsonGu = jsonDecode(jsonData)["results"][1]['region']['area2']['name'];
+    var myJsonSi = jsonDecode(jsonData)["results"][1]['region']['area1']['name'];
+    var myJsonSi1 = jsonDecode(jsonData)["results"][1]['region']['area3']['name'];
+
+    setState(() {
+      location = myJsonGu + ' ' + myJsonSi + ' ' + myJsonSi1;
+    });
+  }
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
   _onDelete(index) {
     setState(() {
       _values.removeAt(index);
@@ -39,6 +82,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
       await supabase.from('diary').insert({
         'content': _diaryController.text,
         'author': 'a20e7289-e63c-4053-9f63-3fc5f8bbaba9',
+        'location': location
       });
     } on PostgrestException catch (error) {
       print(error.message);
@@ -385,7 +429,15 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 15,),
+            Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 15),
+              child: Row(
+                children: [
+                  Text(location,style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
+                  const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+                ],
+              ),
+            ),
             TextField(
               maxLines: 10,
               controller: _diaryController,

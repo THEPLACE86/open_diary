@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_diary/page/navbar/create/diary_create.dart';
 import 'package:open_diary/page/navbar/home/home.dart';
-import 'package:open_diary/page/navbar/create/diary_create.dart';
 
 class MainNavBarPage extends StatefulWidget {
   const MainNavBarPage({Key? key}) : super(key: key);
@@ -12,6 +11,7 @@ class MainNavBarPage extends StatefulWidget {
 }
 
 class _MainNavBarPageState extends State<MainNavBarPage> {
+
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
