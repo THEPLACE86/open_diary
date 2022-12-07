@@ -6,12 +6,14 @@ class DiaryModel {
     required this.location,
     required this.lat,
     required this.lng,
+    required this.feel,
   });
 
   final int id;
   final String content;
   final String author;
   final String location;
+  final String feel;
   final double lat;
   final double lng;
 
@@ -23,5 +25,6 @@ class DiaryModel {
       location = map['location'],
       lat = map['lat'],
       lng = map['lng'],
+      feel = map['feel'],
       author = map['author'];
 }

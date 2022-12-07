@@ -50,13 +50,23 @@ class _Tab1State extends State<Tab1> {
                       child: Row(
                         children: [
                           Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.red[50]
-                              ),
-                              height: 35,
-                              width: 50,
-                              child: const Center(child: Text('기쁨', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 11)))
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: data.feel == '기쁨' ? Colors.red[50] :
+                                     data.feel == '행복' ? Colors.yellow[50] :
+                                     data.feel == '슬픔' ? Colors.blue[50] :
+                                     data.feel == '우울' ? Colors.deepPurple[50] :
+                                     data.feel == '분노' ? Colors.red[50] :
+                                     data.feel == '후회' ? Colors.grey[100] :
+                                     data.feel == '보통' ? Colors.lime[50] :
+                                     data.feel == '설렘' ? Colors.orange[100]:
+                                     Colors.cyan[50],
+                            ),
+                            height: 35,
+                            width: 50,
+                            child: Center(
+                              child: Text(data.feel, style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
+                            )
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 15),
@@ -80,13 +90,13 @@ class _Tab1State extends State<Tab1> {
                     padding: const EdgeInsets.only(left: 25, right: 25),
                     child: Text(data.content, maxLines: 3,),
                   ),
-                  data.location != '위치없음' ?
+                  data.location != '위치를 활성화 해주세요.' ?
                   Padding(
                     padding: const EdgeInsets.only(top: 10, left: 25),
                     child: Row(
                       children: [
-                        Text(data.location,style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
-                        const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+                        Text(data.location,style: const TextStyle(fontSize: 10, color: Colors.black38, fontWeight: FontWeight.bold),),
+                        const Text(' 어딘가 에서...',style: TextStyle(fontSize: 10, color: Colors.grey),),
                       ],
                     ),
                   ): Container(),

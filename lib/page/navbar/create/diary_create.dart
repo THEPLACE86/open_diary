@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_diary/main.dart';
+import 'package:open_diary/page/navbar/main_nav_bar.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -17,9 +19,11 @@ class DiaryCreatePage extends StatefulWidget {
 
 class _DiaryCreatePageState extends State<DiaryCreatePage> {
 
+  final supabase = Supabase.instance.client;
   String todayFeel = '선택해 주세요.';
   String location = '위치 검색중..';
-  final supabase = Supabase.instance.client;
+  String location1 = ' 어딘가 에서...';
+  late String lat, lng;
 
   static const mockResults = [
     'dat@gmail.com',
@@ -33,36 +37,42 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   final TextEditingController _textEditingController = TextEditingController();
   final TextEditingController _diaryController = TextEditingController();
 
-  void fetchData() async {
+  Future<void> fetchData() async {
     LocationPermission permission = await Geolocator.requestPermission(); //오류 해결 코드
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    //현재위치를 position이라는 변수로 저장
-    String lat = position.latitude.toString();
-    String lon = position.longitude.toString();
-    //위도와 경도를 나눠서 변수 선언
-    print(lat);
-    print(lon);
-    // 잘 나오는지 확인!
-    Map<String,String> headers = {
-      "X-NCP-APIGW-API-KEY-ID": "h7gtjkv92c", // 개인 클라이언트 아이디
-      "X-NCP-APIGW-API-KEY": "fidpcKEkyxqEnmCRAErXGgKSQJe5mYRWBcGeiTda" // 개인 시크릿 키
-    };
+    bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
-    http.Response response = await http.get(
-        Uri.parse(
-            "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=$lon,$lat&sourcecrs=epsg:4326&output=json"),
-        headers: headers
-    );
+    if(isLocationServiceEnabled == true){
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
-    String jsonData = response.body;
+      lat = position.latitude.toString();
+      lng = position.longitude.toString();
 
-    var myJsonGu = jsonDecode(jsonData)["results"][1]['region']['area2']['name'];
-    var myJsonSi = jsonDecode(jsonData)["results"][1]['region']['area1']['name'];
-    var myJsonSi1 = jsonDecode(jsonData)["results"][1]['region']['area3']['name'];
+      Map<String,String> headers = {
+        "X-NCP-APIGW-API-KEY-ID": "h7gtjkv92c", // 개인 클라이언트 아이디
+        "X-NCP-APIGW-API-KEY": "fidpcKEkyxqEnmCRAErXGgKSQJe5mYRWBcGeiTda" // 개인 시크릿 키
+      };
 
-    setState(() {
-      location = myJsonGu + ' ' + myJsonSi + ' ' + myJsonSi1;
-    });
+      http.Response response = await http.get(
+          Uri.parse(
+              "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=$lng,$lat&sourcecrs=epsg:4326&output=json"),
+          headers: headers
+      );
+
+      String jsonData = response.body;
+      print(jsonData);
+      var myJsonGu = jsonDecode(jsonData)["results"][1]['region']['area2']['name'];
+      var myJsonSi = jsonDecode(jsonData)["results"][1]['region']['area1']['name'];
+      var myJsonSi1 = jsonDecode(jsonData)["results"][1]['region']['area3']['name'];
+
+      setState(() {
+        location = myJsonSi + ' ' + myJsonGu + ' ' + myJsonSi1;
+      });
+    }else{
+      setState(() {
+        location = '위치를 활성화 해주세요.';
+        location1 = '';
+      });
+    }
   }
 
   @override
@@ -82,8 +92,12 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
       await supabase.from('diary').insert({
         'content': _diaryController.text,
         'author': 'a20e7289-e63c-4053-9f63-3fc5f8bbaba9',
-        'location': location
+        'location': location,
+        'lat': lat,
+        'lng': lng,
+        'feel': todayFeel
       });
+      Get.offAll(const MainNavBarPage());
     } on PostgrestException catch (error) {
       print(error.message);
       //context.showErrorSnackBar(message: error.message);
@@ -294,7 +308,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                       children: [
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '우울';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -314,7 +331,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                         const SizedBox(width: 20),
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '분노';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -334,7 +354,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                         const SizedBox(width: 20),
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '후회';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -360,7 +383,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                       children: [
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '보통';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -380,7 +406,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                         const SizedBox(width: 20),
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '설렘';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -400,7 +429,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                                         const SizedBox(width: 20),
                                         InkWell(
                                           onTap: () {
-
+                                            setState(() {
+                                              todayFeel = '짜증';
+                                            });
+                                            Get.back();
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -434,7 +466,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
               child: Row(
                 children: [
                   Text(location,style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
-                  const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+                  Text(location1,style: const TextStyle(fontSize: 11, color: Colors.grey),),
                 ],
               ),
             ),
