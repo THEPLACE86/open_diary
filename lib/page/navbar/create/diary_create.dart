@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:open_diary/main.dart';
 import 'package:open_diary/page/navbar/main_nav_bar.dart';
 
@@ -24,6 +25,11 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   String location = '위치 검색중..';
   String location1 = ' 어딘가 에서...';
   late String lat, lng;
+
+  final controller = MultiImagePickerController(
+    maxImages: 10,
+    allowedImageTypes: ['png', 'jpg', 'jpeg'],
+  );
 
   static const mockResults = [
     'dat@gmail.com',
@@ -480,7 +486,16 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                 ),
               ),
               keyboardType: TextInputType.multiline,
-            )
+            ),
+            SizedBox(
+              height: 300,
+              child: SingleChildScrollView(
+                child: MultiImagePickerView(
+                  controller: controller,
+                  padding: const EdgeInsets.all(10),
+                ),
+              ),
+            ),
           ],
         ),
       ),
