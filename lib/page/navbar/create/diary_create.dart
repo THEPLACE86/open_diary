@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -65,7 +67,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
       );
 
       String jsonData = response.body;
-      print(jsonData);
+
       var myJsonGu = jsonDecode(jsonData)["results"][1]['region']['area2']['name'];
       var myJsonSi = jsonDecode(jsonData)["results"][1]['region']['area1']['name'];
       var myJsonSi1 = jsonDecode(jsonData)["results"][1]['region']['area3']['name'];
@@ -94,15 +96,28 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   }
 
   void saveDiary() async {
+    List td = [];
+    print(controller.images);
+
     try {
+      for(final ImageFile image in controller.images){
+        supabase.storage.from('storage-diary').upload(
+          image.name, File(image.path!)
+        );
+        td.add('https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/images%${image.name}');
+        print(td);
+      }
+
       await supabase.from('diary').insert({
         'content': _diaryController.text,
         'author': 'a20e7289-e63c-4053-9f63-3fc5f8bbaba9',
         'location': location,
         'lat': lat,
         'lng': lng,
-        'feel': todayFeel
+        'feel': todayFeel,
+        'images': td
       });
+
       Get.offAll(const MainNavBarPage());
     } on PostgrestException catch (error) {
       print(error.message);
@@ -142,7 +157,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                   length: _values.length,
                   controller: _textEditingController,
                   focusNode: _focusNode,
-                  delimiters: [',', ' '],
+                  delimiters: const [',', ' '],
                   hasAddButton: true,
                   resetTextOnSubmitted: true,
                   // This is set to grey just to illustrate the `textStyle` prop

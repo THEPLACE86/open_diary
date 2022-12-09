@@ -7,6 +7,7 @@ class DiaryModel {
     required this.lat,
     required this.lng,
     required this.feel,
+    required this.images
   });
 
   final int id;
@@ -16,6 +17,7 @@ class DiaryModel {
   final String feel;
   final double lat;
   final double lng;
+  final List images;
 
   DiaryModel.fromMap({
     required Map<String, dynamic> map,
@@ -26,5 +28,6 @@ class DiaryModel {
       lat = map['lat'],
       lng = map['lng'],
       feel = map['feel'],
+      images = map['images'],
       author = map['author'];
 }
