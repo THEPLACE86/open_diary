@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:open_diary/model/diary.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,7 +25,6 @@ class _Tab1State extends State<Tab1> {
 
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder<List<DiaryModel>>(
       stream: _diaryStream,
       builder: (context, snapshot){
@@ -86,6 +86,32 @@ class _Tab1State extends State<Tab1> {
                       ),
                     ),
                   ),
+                  if(data.images.toString() != '[]')Padding(
+                    padding: const EdgeInsets.only(top: 5,bottom: 5),
+                    child: (
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: 350,
+                          enlargeCenterPage: false,
+                        ),
+                        items: data.images.map((i) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Image.network(
+                                  i.toString(),
+                                  fit: BoxFit.cover,
+                                  height: 300,
+                                )
+                              );
+                            },
+                          );
+                        }).toList(),
+                      )
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 25, right: 25),
                     child: Text(data.content, maxLines: 3,),
@@ -95,8 +121,8 @@ class _Tab1State extends State<Tab1> {
                     padding: const EdgeInsets.only(top: 10, left: 25),
                     child: Row(
                       children: [
-                        Text(data.location,style: const TextStyle(fontSize: 10, color: Colors.black38, fontWeight: FontWeight.bold),),
-                        const Text(' 어딘가 에서...',style: TextStyle(fontSize: 10, color: Colors.grey),),
+                        Text(data.location,style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
+                        const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
                       ],
                     ),
                   ): Container(),
