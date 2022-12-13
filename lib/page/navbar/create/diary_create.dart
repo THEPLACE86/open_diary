@@ -1,20 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:multi_image_picker_view/multi_image_picker_view.dart';
-import 'package:open_diary/main.dart';
-import 'package:open_diary/page/login/register.dart';
-import 'package:open_diary/page/navbar/main_nav_bar.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'dart:convert';
-
-import 'package:uuid/uuid.dart';
+import '../../login/google_login.dart';
 
 class DiaryCreatePage extends StatefulWidget {
   const DiaryCreatePage({Key? key}) : super(key: key);
@@ -149,7 +142,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
           ),
           IconButton(
               disabledColor: Colors.grey,
-              onPressed: () => Get.to(RegisterPage()),
+              onPressed: () => Get.to(const RegisterPage()),
               icon: const Icon(Icons.access_time_filled_sharp, color: Colors.teal,)
           )
         ],
