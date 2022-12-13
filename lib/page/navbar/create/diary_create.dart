@@ -130,7 +130,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('일기 쓰기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),),
+        title: const Text('일기 쓰기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black),),
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.white,
