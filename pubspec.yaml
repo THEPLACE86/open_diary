@@ -39,6 +39,7 @@ dependencies:
   supabase_flutter:
   supabase_auth_ui:
   get:
+  get_storage:
   google_nav_bar:
   super_tag_editor:
   geolocator:

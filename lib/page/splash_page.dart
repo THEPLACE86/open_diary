@@ -14,6 +14,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   bool _redirectCalled = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,8 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import '../../login/google_login.dart';
+import '../main_nav_bar.dart';
 
 class DiaryCreatePage extends StatefulWidget {
   const DiaryCreatePage({Key? key}) : super(key: key);
@@ -91,40 +95,41 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
     });
   }
 
-  // void saveDiary() async {
-  //   List images = [];
-  //
-  //   try {
-  //     int date = DateTime.now().millisecondsSinceEpoch;
-  //
-  //     for(final ImageFile image in controller.images){
-  //       var uuid = const Uuid().v4();
-  //       supabase.storage.from('storage-diary').upload(
-  //         'loginID/$date/$uuid', File(image.path!)
-  //       );
-  //       images.add(
-  //         'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/loginID/$date/$uuid'
-  //       );
-  //     }
-  //
-  //     await supabase.from('diary').insert({
-  //       'content': _diaryController.text,
-  //       'author': 'a20e7289-e63c-4053-9f63-3fc5f8bbaba9',
-  //       'location': location,
-  //       'lat': lat,
-  //       'lng': lng,
-  //       'feel': todayFeel,
-  //       'images': images
-  //     });
-  //
-  //     Get.offAll(const MainNavBarPage());
-  //   } on PostgrestException catch (error) {
-  //     print(error.message);
-  //     //context.showErrorSnackBar(message: error.message);
-  //   } catch (_) {
-  //     //context.showErrorSnackBar(message: unexpectedErrorMessage);
-  //   }
-  // }
+  void saveDiary() async {
+    List images = [];
+
+    try {
+      int date = DateTime.now().millisecondsSinceEpoch;
+      String uid = Supabase.instance.client.auth.currentUser!.id;
+
+      for(final ImageFile image in controller.images){
+        var uuid = const Uuid().v4();
+        supabase.storage.from('storage-diary').upload(
+          'diary_image/$uid/$date/$uuid', File(image.path!)
+        );
+        images.add(
+          'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/loginID/$date/$uuid'
+        );
+      }
+
+      await supabase.from('diary').insert({
+        'content': _diaryController.text,
+        'author': uid,
+        'location': location,
+        'lat': lat,
+        'lng': lng,
+        'feel': todayFeel,
+        'images': images
+      });
+
+      Get.offAll(const MainNavBarPage());
+    } on PostgrestException catch (error) {
+      print(error.message);
+      //context.showErrorSnackBar(message: error.message);
+    } catch (_) {
+      //context.showErrorSnackBar(message: unexpectedErrorMessage);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +142,9 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         actions: [
           IconButton(
             disabledColor: Colors.grey,
-            onPressed: () {},
+            onPressed: () => saveDiary(),
             icon: const Icon(Icons.check_circle, color: Colors.teal,)
           ),
-          IconButton(
-              disabledColor: Colors.grey,
-              onPressed: () => Get.to(const RegisterPage()),
-              icon: const Icon(Icons.access_time_filled_sharp, color: Colors.teal,)
-          )
         ],
       ),
       body: SingleChildScrollView(

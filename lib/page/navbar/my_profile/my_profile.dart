@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/get_utils.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:open_diary/page/login/google_login.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 class MyProfilePage extends StatefulWidget {
@@ -11,46 +13,19 @@ class MyProfilePage extends StatefulWidget {
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
-
+  final loginInfo = GetStorage();
   String nickname = '';
 
   @override
   void initState(){
-    getProfile();
     super.initState();
-  }
-
-  Future<void> getProfile() async {
-    try{
-      final uid = Supabase.instance.client.auth.currentUser!.id;
-      print('유아이디 : $uid');
-      final profile = await Supabase.instance.client.from('profiles').select().eq('uid', uid).single() as Map;
-      print('아니 시발 : ${profile['uid']}');
-
-      // if(profile.isEmpty){
-      //   await Supabase.instance.client.from('profiles').insert({
-      //     'uid': uid,
-      //   });
-      //   final profile1 = await Supabase.instance.client.from('profiles').select().eq('uid', uid).single() as Map;
-      //   setState(() {
-      //     nickname = profile1['nickname'] ?? '안됨';
-      //   });
-      // }else{
-      //   setState(() {
-      //     nickname = profile['nickname'] ?? '';
-      //   });
-      // }
-
-    } on PostgrestException catch (error) {
-      print(error.message);
-    } catch (error) {
-      print('Unexpected exception occurred');
-    }
   }
 
   Future<void> _signOut() async {
     try {
       await Supabase.instance.client.auth.signOut();
+      await loginInfo.write('uid','');
+      await loginInfo.write('nickname','');
     } on AuthException catch (error) {
       Get.snackbar(
         '에러!',
@@ -89,11 +64,29 @@ class _MyProfilePageState extends State<MyProfilePage> {
           ),
         ],
       ),
-      body: Column(
+      body: loginInfo.read('uid') != '' ? Column(
         children: [
-          Text(nickname)
+          Text(loginInfo.read('nickname') ?? '')
         ],
-      ),
+      ): Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('로그인을 해주세요.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+            const SizedBox(height: 10,),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2.0),
+                )
+              ),
+              onPressed: () => Get.to(const RegisterPage()),
+              child: const Text('로그인',style: TextStyle(fontWeight: FontWeight.bold))
+            )
+          ],
+        ),
+      )
     );
   }
 }
