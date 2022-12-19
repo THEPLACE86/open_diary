@@ -10,7 +10,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import '../../login/google_login.dart';
 import '../main_nav_bar.dart';
 
 class DiaryCreatePage extends StatefulWidget {
@@ -45,7 +44,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   final TextEditingController _textEditingController = TextEditingController();
   final TextEditingController _diaryController = TextEditingController();
 
-  Future<void> fetchData() async {
+  Future<void> myLocation() async {
     LocationPermission permission = await Geolocator.requestPermission(); //오류 해결 코드
     bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
@@ -85,7 +84,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
 
   @override
   void initState() {
-    fetchData();
+    myLocation();
     super.initState();
   }
 

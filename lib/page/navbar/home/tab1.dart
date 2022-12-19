@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:open_diary/model/diary.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,11 +15,32 @@ class _Tab1State extends State<Tab1> {
 
   final supabase = Supabase.instance.client;
   late final Stream<List<DiaryModel>> _diaryStream;
+  late double lat, lng;
+
+  Future<void> myLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission(); //오류 해결 코드
+    bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
+
+    if(isLocationServiceEnabled == true){
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+      setState(() {
+        lat = position.latitude;
+        lng = position.longitude;
+      });
+    }else{
+      setState(() {
+        lat = 123.029348;
+        lng = 74.23231;
+      });
+    }
+  }
 
   @override
-  void initState() {
+  void initState() async {
+    await myLocation();
     //final myUserId = supabase.auth.currentUser!.id;
-    _diaryStream = supabase.from('diary').stream(primaryKey: ['id']).map((maps) => maps
+    _diaryStream = supabase.from('diary').stream(primaryKey: ['id']).eq('open_diary', true).map((maps) => maps
         .map((map) => DiaryModel.fromMap(map: map)).toList());
     super.initState();
   }
@@ -123,6 +145,7 @@ class _Tab1State extends State<Tab1> {
                       children: [
                         Text(data.location,style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
                         const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+
                       ],
                     ),
                   ): Container(),
