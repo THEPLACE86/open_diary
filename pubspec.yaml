@@ -48,6 +48,7 @@ dependencies:
   multi_image_picker_view:
   carousel_slider:
   uuid:
+  latlong2:
 
 dev_dependencies:
   flutter_test:

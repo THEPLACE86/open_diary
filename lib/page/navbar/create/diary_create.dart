@@ -118,7 +118,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         'lat': lat,
         'lng': lng,
         'feel': todayFeel,
-        'images': images
+        'images': images,
+        'open_diary': true
       });
 
       Get.offAll(const MainNavBarPage());

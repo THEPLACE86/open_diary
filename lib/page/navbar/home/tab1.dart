@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:open_diary/model/diary.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,7 +16,7 @@ class _Tab1State extends State<Tab1> {
 
   final supabase = Supabase.instance.client;
   late final Stream<List<DiaryModel>> _diaryStream;
-  late double lat, lng;
+  late double  lat = 123.029348, lng = 74.23231;
 
   Future<void> myLocation() async {
     LocationPermission permission = await Geolocator.requestPermission(); //오류 해결 코드
@@ -37,8 +38,8 @@ class _Tab1State extends State<Tab1> {
   }
 
   @override
-  void initState() async {
-    await myLocation();
+  void initState(){
+    myLocation();
     //final myUserId = supabase.auth.currentUser!.id;
     _diaryStream = supabase.from('diary').stream(primaryKey: ['id']).eq('open_diary', true).map((maps) => maps
         .map((map) => DiaryModel.fromMap(map: map)).toList());
@@ -56,10 +57,11 @@ class _Tab1State extends State<Tab1> {
         if (snapshot.hasData){
           final diary = snapshot.data!;
           return ListView.builder(
-
             itemCount: diary.length,
             itemBuilder: (context, index){
               final data = diary[index];
+              const Distance distance = Distance();
+              final double km = distance.as(LengthUnit.Kilometer, LatLng(lat, lng), LatLng(data.lat, data.lng));
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -145,7 +147,7 @@ class _Tab1State extends State<Tab1> {
                       children: [
                         Text(data.location,style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
                         const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
-
+                        Text(km.ceil().toString())
                       ],
                     ),
                   ): Container(),
