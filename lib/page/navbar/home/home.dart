@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:open_diary/page/navbar/home/tab1.dart';
-import 'package:open_diary/page/navbar/home/tab2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -63,9 +62,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               controller: _nestedTabController,
               children: const [
                 Tab1(),
-                Tab2(),
                 Tab1(),
-                Tab2(),
+                Tab1(),
+                Tab1(),
                 Tab1(),
               ],
             ),

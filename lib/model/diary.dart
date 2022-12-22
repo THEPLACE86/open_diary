@@ -9,6 +9,8 @@ class DiaryModel {
     required this.feel,
     required this.images,
     required this.openDiary,
+    required this.hit,
+    required this.createAt,
   });
 
   final int id;
@@ -20,17 +22,21 @@ class DiaryModel {
   final double lng;
   final List images;
   final bool openDiary;
+  final int hit;
+  final String createAt;
 
-  DiaryModel.fromMap({
-    required Map<String, dynamic> map,
-  }) :
-      id = map['id'],
-      content = map['content'],
-      location = map['location'],
-      lat = map['lat'],
-      lng = map['lng'],
-      feel = map['feel'],
-      images = map['images'],
-      openDiary = map['open_diary'],
-      author = map['author'];
+  factory DiaryModel.fromJson(Map<String, dynamic> json) =>
+    DiaryModel(
+      id: json['id'],
+      content: json['content'],
+      author: json['author'],
+        location:  json['location'],
+        lat: json['lat'],
+        lng: json['lng'],
+        feel: json['feel'],
+        images: json['images'],
+        openDiary: json['open_diary'],
+        hit: json['hit'],
+        createAt: json['create_at']
+    );
 }
