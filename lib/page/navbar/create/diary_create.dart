@@ -98,22 +98,22 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
     List images = [];
 
     try {
+      print('wef');
       int date = DateTime.now().millisecondsSinceEpoch;
-      String uid = Supabase.instance.client.auth.currentUser!.id;
 
-      for(final ImageFile image in controller.images){
-        var uuid = const Uuid().v4();
-        supabase.storage.from('storage-diary').upload(
-          'diary_image/$uid/$date/$uuid', File(image.path!)
-        );
-        images.add(
-          'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/loginID/$date/$uuid'
-        );
-      }
+      // for(final ImageFile image in controller.images){
+      //   var uuid = const Uuid().v4();
+      //   supabase.storage.from('storage-diary').upload(
+      //     'diary_image/$uid/$date/$uuid', File(image.path!)
+      //   );
+      //   images.add(
+      //     'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/loginID/$date/$uuid'
+      //   );
+      // }
 
       await supabase.from('diary').insert({
         'content': _diaryController.text,
-        'author': uid,
+        'author': supabase.auth.currentUser!.id,
         'location': location,
         'lat': lat,
         'lng': lng,

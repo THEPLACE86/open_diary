@@ -18,7 +18,7 @@ class Tab1 extends StatefulWidget {
 }
 
 class _Tab1State extends State<Tab1> {
-  static const _pageSize = 3;
+  final int pageSize = 4;
 
   final PagingController<int, DiaryModel> _pagingController = PagingController(firstPageKey: 1);
 
@@ -62,22 +62,28 @@ class _Tab1State extends State<Tab1> {
     //     .map((map) => DiaryModel.fromMap(map: map)).toList());
   }
 
-  Future<List<PostModel>> getPosts(offset, limit) async {
-  
-    final diaryStream = await supabase.from('diary').select('content');
-    print(diaryStream);
-    var postList = PostModel.fromJsonList(diaryStream);
-    print(postList);
-    return postList;
+  Future<List<PostModel>> getPosts(offset) async {
+    print(offset);
+    if(offset == 0){
+      final diaryStream = await supabase.from('diary').select('content').range(0, 3);
+      print(diaryStream);
+      var postList = PostModel.fromJsonList(diaryStream);
+      return postList;
+    }else{
+      final diaryStream = await supabase.from('diary').select('content').range(offset, offset + pageSize -1);
+      print('엘스 : $diaryStream');
+      var postList = PostModel.fromJsonList(diaryStream);
+      return postList;
+    }
   }
 
 
   @override
   Widget build(BuildContext context) {
     return PagewiseListView<PostModel>(
-        pageSize: 5,
+        pageSize: pageSize,
         itemBuilder: _itemBuilder,
-        pageFuture: (pageIndex) => getPosts(pageIndex! * 5, 5)
+        pageFuture: (pageIndex) => getPosts(pageIndex! * pageSize)
     );
   }
 
@@ -89,7 +95,7 @@ class _Tab1State extends State<Tab1> {
             Icons.person,
             color: Colors.brown[200],
           ),
-          title: Text(entry.content!),
+          title: Text(entry.content!, style: TextStyle(fontSize: 100),),
           subtitle: Text('entry!'),
         ),
         Divider()
