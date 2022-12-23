@@ -25,6 +25,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   String todayFeel = '선택해 주세요.';
   String location = '위치 검색중..';
   String location1 = ' 어딘가 에서...';
+  String confirmText = '';
   late String lat, lng;
 
   final controller = MultiImagePickerController(
@@ -39,9 +40,9 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
     'datvu@gmail.com'
   ];
 
-  final List<String> _values = [];
+  final List<String> _tags = [];
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _tagEditingController = TextEditingController(text: '');
   final TextEditingController _diaryController = TextEditingController();
 
   Future<void> myLocation() async {
@@ -90,39 +91,52 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
 
   _onDelete(index) {
     setState(() {
-      _values.removeAt(index);
+      _tags.removeAt(index);
     });
   }
 
   void saveDiary() async {
-    List images = [];
-
     try {
-      print('wef');
-      int date = DateTime.now().millisecondsSinceEpoch;
+      if(confirmText.trim().isEmpty || todayFeel == '선택해 주세요.'){
+        Get.snackbar(
+          '빈칸 입력.',
+          '오늘의 기분 선택과 일기를 써주세요.',
+          snackPosition: SnackPosition.TOP,
+          forwardAnimationCurve: Curves.elasticInOut,
+          reverseAnimationCurve: Curves.easeOut,
+        );
+      }else{
+        List images = [];
+        int date = DateTime.now().millisecondsSinceEpoch;
+        String uid = supabase.auth.currentUser!.id;
 
-      // for(final ImageFile image in controller.images){
-      //   var uuid = const Uuid().v4();
-      //   supabase.storage.from('storage-diary').upload(
-      //     'diary_image/$uid/$date/$uuid', File(image.path!)
-      //   );
-      //   images.add(
-      //     'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/loginID/$date/$uuid'
-      //   );
-      // }
+        final nickname = await supabase.from('profiles').select('nickname').eq('uid', uid);
 
-      await supabase.from('diary').insert({
-        'content': _diaryController.text,
-        'author': supabase.auth.currentUser!.id,
-        'location': location,
-        'lat': lat,
-        'lng': lng,
-        'feel': todayFeel,
-        'images': images,
-        'open_diary': true
-      });
+        for(final ImageFile image in controller.images){
+          var uuid = const Uuid().v4();
+          supabase.storage.from('storage-diary').upload(
+              'diary_image/$uid/$date/$uuid', File(image.path!)
+          );
+          images.add(
+              'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/diary_image/$uid/$date/$uuid'
+          );
+        }
 
-      Get.offAll(const MainNavBarPage());
+        await supabase.from('diary').insert({
+          'content': _diaryController.text,
+          'author': supabase.auth.currentUser!.id,
+          'location': location,
+          'lat': lat,
+          'lng': lng,
+          'feel': todayFeel,
+          'images': images,
+          'open_diary': true,
+          'nickname': nickname[0]['nickname'],
+          'tags' : _tags
+        });
+
+        Get.offAll(const MainNavBarPage());
+      }
     } on PostgrestException catch (error) {
       print(error.message);
       //context.showErrorSnackBar(message: error.message);
@@ -142,8 +156,11 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         actions: [
           IconButton(
             disabledColor: Colors.grey,
-            onPressed: () => saveDiary(),
-            icon: const Icon(Icons.check_circle, color: Colors.teal,)
+            onPressed: confirmText.trim().isEmpty || todayFeel == '선택해 주세요.' ? null : () => saveDiary(),
+            icon: Icon(
+              Icons.check_circle,
+              color: confirmText.trim().isEmpty || todayFeel == '선택해 주세요.' ? Colors.grey : Colors.cyan,
+            )
           ),
         ],
       ),
@@ -158,8 +175,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                 physics : const ClampingScrollPhysics(),
                 children: <Widget>[
                   TagEditor<String>(
-                    length: _values.length,
-                    controller: _textEditingController,
+                    length: _tags.length,
+                    controller: _tagEditingController,
                     focusNode: _focusNode,
                     delimiters: const [',', ' '],
                     hasAddButton: true,
@@ -168,7 +185,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                     textStyle: const TextStyle(color: Colors.grey),
                     onSubmitted: (outstandingValue) {
                       setState(() {
-                        _values.add(outstandingValue);
+                        _tags.add(outstandingValue);
                       });
                     },
                     inputDecoration: const InputDecoration(
@@ -177,12 +194,12 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                     ),
                     onTagChanged: (newValue) {
                       setState(() {
-                        _values.add(newValue);
+                        _tags.add(newValue);
                       });
                     },
                     tagBuilder: (context, index) => _Chip(
                       index: index,
-                      label: _values[index],
+                      label: _tags[index],
                       onDeleted: _onDelete,
                     ),
                     // InputFormatters example, this disallow \ and /
@@ -195,7 +212,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                         title: Text(data),
                         onTap: () {
                           setState(() {
-                            _values.add(data);
+                            _tags.add(data);
                           });
                           state.selectSuggestion(data);
                         },
@@ -228,7 +245,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                   const SizedBox(width: 5),
                   TextButton(
                     onPressed: () =>
-                        Get.bottomSheet(
+                      Get.bottomSheet(
                             Container(
                               color: Colors.grey[50],
                               child: Padding(
@@ -499,7 +516,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
                         height: 35,
                         width: todayFeel == '선택해 주세요.' ? 100 : 50,
                         child: Center(
-                            child: Text(todayFeel, style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
+                          child: Text(todayFeel, style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
                         )
                     ),
                   ),
@@ -517,6 +534,11 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
               TextField(
                 maxLines: 10,
                 controller: _diaryController,
+                onChanged: (text) {
+                  setState(() {
+                    confirmText = text;
+                  });
+                },
                 decoration: const InputDecoration(
                   labelText: '오늘 나는 ...',
                   border: OutlineInputBorder(

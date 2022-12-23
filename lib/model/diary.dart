@@ -1,42 +1,35 @@
 class DiaryModel {
-  DiaryModel({
-    required this.id,
-    required this.content,
-    required this.author,
-    required this.location,
-    required this.lat,
-    required this.lng,
-    required this.feel,
-    required this.images,
-    required this.openDiary,
-    required this.hit,
-    required this.createAt,
-  });
+  int? id;
+  String? content;
+  String? author;
+  String? location;
+  String? feel;
+  double? lat;
+  double? lng;
+  List? images;
+  List? tags;
+  bool? openDiary;
+  int? hit;
+  String? createAt;
+  String? nickName;
 
-  final int id;
-  final String content;
-  final String author;
-  final String location;
-  final String feel;
-  final double lat;
-  final double lng;
-  final List images;
-  final bool openDiary;
-  final int hit;
-  final String createAt;
+  DiaryModel.fromJson(obj) {
+    id = obj['id'] ?? 0;
+    content = obj['content'] ?? '';
+    author = obj['author'] ?? '';
+    location = obj['location'] ?? '';
+    feel = obj['feel'] ?? '';
+    lat = obj['lat'] ?? 123.4040;
+    lng = obj['lng'] ?? 36.234;
+    images = obj['images'] ?? [];
+    openDiary = obj['open_diary'] ?? true;
+    hit = obj['hit'] ?? 0;
+    createAt = obj['create_at'] ?? '';
+    nickName = obj['nickname'] ?? '';
+    tags = obj['tags'] ?? [];
+  }
 
-  factory DiaryModel.fromJson(Map<String, dynamic> json) =>
-    DiaryModel(
-      id: json['id'],
-      content: json['content'],
-      author: json['author'],
-        location:  json['location'],
-        lat: json['lat'],
-        lng: json['lng'],
-        feel: json['feel'],
-        images: json['images'],
-        openDiary: json['open_diary'],
-        hit: json['hit'],
-        createAt: json['create_at']
-    );
+  static List<DiaryModel> fromJsonList(jsonList) {
+    return jsonList.map<DiaryModel>((obj) => DiaryModel.fromJson(obj)).toList();
+  }
 }

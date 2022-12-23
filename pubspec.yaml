@@ -48,9 +48,7 @@ dependencies:
   multi_image_picker_view:
   carousel_slider:
   uuid:
-  latlong2:
-  infinite_scroll_pagination:
-  yet_another_json_isolate:
+  # latlong2:
   flutter_pagewise:
 
 dev_dependencies:
