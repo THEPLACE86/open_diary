@@ -13,6 +13,13 @@ class _ChatPageState extends State<ChatPage> {
   final loginInfo = GetStorage();
 
   @override
+  void initState() {
+    super.initState();
+    print('로그인 ${loginInfo.read('nickname')}');
+    print('uid ${loginInfo.read('uid')}');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -21,7 +28,7 @@ class _ChatPageState extends State<ChatPage> {
           elevation: 0,
           backgroundColor: Colors.white,
         ),
-        body: loginInfo.read('uid') != '' ? Column(
+        body: loginInfo.read('uid') != null ? Column(
           children: [
             Text(loginInfo.read('nickname') ?? '')
           ],

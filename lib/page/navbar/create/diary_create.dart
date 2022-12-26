@@ -96,6 +96,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   }
 
   void saveDiary() async {
+
     try {
       if(confirmText.trim().isEmpty || todayFeel == '선택해 주세요.'){
         Get.snackbar(
@@ -107,7 +108,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         );
       }else{
         List images = [];
-        int date = DateTime.now().millisecondsSinceEpoch;
+
+        String date = '${DateTime.now().year}년 ${DateTime.now().month}월 ${DateTime.now().day}일';
         String uid = supabase.auth.currentUser!.id;
 
         final nickname = await supabase.from('profiles').select('nickname').eq('uid', uid);
@@ -132,7 +134,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
           'images': images,
           'open_diary': true,
           'nickname': nickname[0]['nickname'],
-          'tags' : _tags
+          'tags' : _tags,
+          'create_date': date.toString()
         });
 
         Get.offAll(const MainNavBarPage());

@@ -15,8 +15,10 @@ class Tab1 extends StatefulWidget {
 
 class _Tab1State extends State<Tab1> {
   final int pageSize = 4;
+  late PagewiseLoadController<DiaryModel> pageLoadController;
 
   final supabase = Supabase.instance.client;
+
   double  lat = 37.2042, lng = 126.864;
 
   Future<void> myLocation() async {
@@ -44,6 +46,10 @@ class _Tab1State extends State<Tab1> {
   @override
   void initState(){
     myLocation();
+    pageLoadController = PagewiseLoadController(
+        pageSize: 4,
+        pageFuture: (pageIndex) => getPosts(pageIndex! * 4)
+    );
     super.initState();
   }
 
@@ -56,21 +62,19 @@ class _Tab1State extends State<Tab1> {
 
   Future<List<DiaryModel>> getPosts(offset) async {
     print(offset);
+    List diaryStream = [];
     if(offset == 0){
-      final diaryStream = await supabase.from('diary').select().range(0, 3);
-      print(diaryStream);
-      var postList = DiaryModel.fromJsonList(diaryStream);
-      return postList;
+      diaryStream = await supabase.from('diary').select().range(0, 3);
     }else{
-      final diaryStream = await supabase.from('diary').select().range(offset, offset + pageSize -1);
-      print('엘스 : $diaryStream');
-      var postList = DiaryModel.fromJsonList(diaryStream);
-      return postList;
+      diaryStream = await supabase.from('diary').select().range(offset, offset + pageSize -1);
     }
+    print(diaryStream);
+    var postList = DiaryModel.fromJsonList(diaryStream);
+    return postList;
   }
 
-  Widget itemBuilder(context, DiaryModel diaryModel, _) {
-
+ Widget itemBuilder(context, DiaryModel diaryModel, index) {
+    int likeCount = diaryModel.like!.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +110,7 @@ class _Tab1State extends State<Tab1> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(diaryModel.nickName!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),),
-                      Text(diaryModel.createAt!, style: const TextStyle(fontSize: 11, color: Colors.black54),),
+                      Text(diaryModel.createDate!.toString(), style: const TextStyle(fontSize: 11, color: Colors.black54),),
                     ],
                   ),
                 ),
@@ -146,7 +150,11 @@ class _Tab1State extends State<Tab1> {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 25, right: 25),
-          child: Text(diaryModel.content??'', maxLines: 3,),
+          child: Text(
+            diaryModel.content!,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         diaryModel.location != '위치를 활성화 해주세요.' ?
         Padding(
@@ -162,14 +170,38 @@ class _Tab1State extends State<Tab1> {
         Padding(
           padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
           child: Row(
-            children: const [
-              Icon(Icons.favorite_border, color: Colors.grey, size: 18),
-              SizedBox(width: 3),
-              Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),),
-              SizedBox(width: 10,),
-              Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
-              SizedBox(width: 3),
-              Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
+            children: [
+              InkWell(
+                onTap: () async {
+                  if(supabase.auth.currentUser!.id.isEmpty){
+                    Get.snackbar(
+                      '로그인 필요.',
+                      '로그인을 해주세요.',
+                      snackPosition: SnackPosition.TOP,
+                      forwardAnimationCurve: Curves.elasticInOut,
+                      reverseAnimationCurve: Curves.easeOut,
+                    );
+                  }else{
+                    if(diaryModel.author == supabase.auth.currentUser!.id){
+
+                    }
+                    final countLike = await supabase.from('diary').update({
+                      'like': diaryModel.like.add(supabase.auth.currentUser!.id)
+                    }).eq('author', supabase.auth.currentUser!.id).select('like');
+                    setState(() {
+                      likeCount = countLike.length;
+                    });
+                  }
+                },
+                child: const Icon(Icons.favorite_border, color: Colors.grey, size: 18)
+              ),
+              const SizedBox(width: 3),
+              Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
+              Text(likeCount.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
+              const SizedBox(width: 10,),
+              const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
+              const SizedBox(width: 3),
+              const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
             ],
           ),
         ),
@@ -190,10 +222,19 @@ class _Tab1State extends State<Tab1> {
 
   @override
   Widget build(BuildContext context) {
-    return PagewiseListView<DiaryModel>(
-        pageSize: pageSize,
-        itemBuilder: itemBuilder,
-        pageFuture: (pageIndex) => getPosts(pageIndex! * pageSize)
+    return RefreshIndicator(
+      onRefresh: () async {
+        pageLoadController.reset();
+        await Future.value({});
+      },
+      child: PagewiseListView<DiaryModel>(
+        //pageSize: pageSize,
+        itemBuilder: (BuildContext context, data, int index) {
+          return itemBuilder(context, data, index);
+        },
+        pageLoadController: pageLoadController,
+        //pageFuture: (pageIndex) => getPosts(pageIndex! * pageSize)
+      ),
     );
   }
 }

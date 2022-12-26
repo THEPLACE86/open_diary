@@ -8,10 +8,12 @@ class DiaryModel {
   double? lng;
   List? images;
   List? tags;
+  List? like;
   bool? openDiary;
   int? hit;
   String? createAt;
   String? nickName;
+  String? createDate;
 
   DiaryModel.fromJson(obj) {
     id = obj['id'] ?? 0;
@@ -19,14 +21,16 @@ class DiaryModel {
     author = obj['author'] ?? '';
     location = obj['location'] ?? '';
     feel = obj['feel'] ?? '';
-    lat = obj['lat'] ?? 123.4040;
-    lng = obj['lng'] ?? 36.234;
+    lat = obj['lat'] ?? 37.2042;
+    lng = obj['lng'] ?? 126.864;
     images = obj['images'] ?? [];
     openDiary = obj['open_diary'] ?? true;
     hit = obj['hit'] ?? 0;
     createAt = obj['create_at'] ?? '';
     nickName = obj['nickname'] ?? '';
     tags = obj['tags'] ?? [];
+    like = obj['like'] ?? [];
+    createDate = obj['create_date'] ?? '';
   }
 
   static List<DiaryModel> fromJsonList(jsonList) {
