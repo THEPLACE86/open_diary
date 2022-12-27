@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:open_diary/model/diary.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,6 +23,8 @@ class _Tab1State extends State<Tab1> {
   final supabase = Supabase.instance.client;
 
   double  lat = 37.2042, lng = 126.864;
+  int likeCount = 0;
+  MaterialColor likeColors = Colors.blue;
 
   Future<void> myLocation() async {
     LocationPermission permission = await Geolocator.requestPermission();
@@ -73,9 +78,8 @@ class _Tab1State extends State<Tab1> {
     return postList;
   }
 
- Widget itemBuilder(context, DiaryModel diaryModel, index) {
-    int likeCount = diaryModel.like!.length;
-    return Column(
+  Widget itemBuilder(context, DiaryModel diaryModel, index) {
+      return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,27 +129,27 @@ class _Tab1State extends State<Tab1> {
         if(diaryModel.images.toString() != '[]')Padding(
           padding: const EdgeInsets.only(top: 5,bottom: 5),
           child: (
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 350,
-                  enlargeCenterPage: false,
-                ),
-                items: diaryModel.images?.map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Image.network(
-                            i.toString(),
-                            fit: BoxFit.cover,
-                            height: 300,
-                          )
-                      );
-                    },
-                  );
-                }).toList(),
-              )
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 350,
+                enlargeCenterPage: false,
+              ),
+              items: diaryModel.images?.map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Image.network(
+                          i.toString(),
+                          fit: BoxFit.cover,
+                          height: 300,
+                        )
+                    );
+                  },
+                );
+              }).toList(),
+            )
           ),
         ),
         Padding(
@@ -161,7 +165,7 @@ class _Tab1State extends State<Tab1> {
           padding: const EdgeInsets.only(top: 10, left: 25),
           child: Row(
             children: [
-              Text(diaryModel.location??'',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
+              Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
               const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
             ],
           ),
@@ -173,31 +177,51 @@ class _Tab1State extends State<Tab1> {
             children: [
               InkWell(
                 onTap: () async {
-                  if(supabase.auth.currentUser!.id.isEmpty){
+                  if(supabase.auth.currentSession == null){
                     Get.snackbar(
                       '로그인 필요.',
                       '로그인을 해주세요.',
-                      snackPosition: SnackPosition.TOP,
+                      snackPosition: SnackPosition.BOTTOM,
                       forwardAnimationCurve: Curves.elasticInOut,
                       reverseAnimationCurve: Curves.easeOut,
                     );
                   }else{
-                    if(diaryModel.author == supabase.auth.currentUser!.id){
+                    final likes = await supabase.from('diary').select('like').eq('id', diaryModel.id);
+                    final List<dynamic> like = likes[0]['like'];
 
+                    if(like.contains(supabase.auth.currentUser!.id)){
+                      like.remove(supabase.auth.currentUser!.id);
+                      List countLike = await supabase.from('diary').update({
+                        'like': like
+                      }).eq('id', diaryModel.id).select('like');
+                      print('이프 : ${countLike[0]['like']}');
+                      setState(() {
+                        likeCount = like.length;
+                        likeColors = Colors.amber;
+                      });
+                    }else{
+                      like.add(supabase.auth.currentUser!.id);
+                      final countLike = await supabase.from('diary').update({
+                        'like': like
+                      }).eq('id', diaryModel.id).select('like');
+                      print('엘스 : ${countLike[0]['like']}');
+                      int c = countLike[0]['like'].length;
+                      print(c);
+                      setState(() {
+                        likeCount = like.length;
+                        likeColors = Colors.teal;
+                      });
                     }
-                    final countLike = await supabase.from('diary').update({
-                      'like': diaryModel.like.add(supabase.auth.currentUser!.id)
-                    }).eq('author', supabase.auth.currentUser!.id).select('like');
-                    setState(() {
-                      likeCount = countLike.length;
-                    });
                   }
                 },
-                child: const Icon(Icons.favorite_border, color: Colors.grey, size: 18)
+                child: Icon(
+                  Icons.favorite_border,
+                  size: 18,
+                  color: likeColors,
+                )
               ),
               const SizedBox(width: 3),
               Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
-              Text(likeCount.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
               const SizedBox(width: 10,),
               const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
               const SizedBox(width: 3),
