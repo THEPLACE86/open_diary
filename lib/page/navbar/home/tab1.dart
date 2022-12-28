@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:open_diary/model/diary.dart';
+import 'package:open_diary/page/navbar/home/detail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Tab1 extends StatefulWidget {
@@ -126,38 +127,44 @@ class _Tab1State extends State<Tab1> {
             ),
           ),
         ),
-        if(diaryModel.images.toString() != '[]')Padding(
-          padding: const EdgeInsets.only(top: 5,bottom: 5),
-          child: (
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 350,
-                enlargeCenterPage: false,
-              ),
-              items: diaryModel.images?.map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Image.network(
-                          i.toString(),
-                          fit: BoxFit.cover,
-                          height: 300,
-                        )
-                    );
-                  },
-                );
-              }).toList(),
-            )
+        if(diaryModel.images.toString() != '[]')InkWell(
+          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5,bottom: 5),
+            child: (
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 350,
+                  enlargeCenterPage: false,
+                ),
+                items: diaryModel.images?.map((i) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Image.network(
+                            i.toString(),
+                            fit: BoxFit.cover,
+                            height: 300,
+                          )
+                      );
+                    },
+                  );
+                }).toList(),
+              )
+            ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 25, right: 25),
-          child: Text(
-            diaryModel.content!,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+        InkWell(
+          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 25, right: 25),
+            child: Text(
+              diaryModel.content!,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
         diaryModel.location != '위치를 활성화 해주세요.' ?
@@ -229,13 +236,16 @@ class _Tab1State extends State<Tab1> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 25),
-          child: Row(
-            children: const [
-              Icon(Icons.add_box_rounded, color: Colors.indigo, size: 16),
-              Center(child: Text(' 댓글 달기...', style: TextStyle(color: Colors.indigo, fontSize: 12, fontWeight: FontWeight.bold),))
-            ],
+        InkWell(
+          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 25),
+            child: Row(
+              children: const [
+                Icon(Icons.add_box_rounded, color: Colors.indigo, size: 16),
+                Center(child: Text(' 댓글 달기...', style: TextStyle(color: Colors.indigo, fontSize: 12, fontWeight: FontWeight.bold),))
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 15,),
