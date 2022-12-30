@@ -48,8 +48,10 @@ dependencies:
   multi_image_picker_view:
   carousel_slider:
   uuid:
+  admob_flutter:
   # latlong2:
   flutter_pagewise:
+  footer:
 
 dev_dependencies:
   flutter_test:
