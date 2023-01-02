@@ -38,6 +38,13 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: (){},
+            child: const Icon(Icons.more_vert_rounded, color: Colors.black54, size: 20,)
+          ),
+          const SizedBox(width: 10)
+        ],
         centerTitle: false,
         iconTheme: const IconThemeData(
           color: Colors.black,
@@ -46,10 +53,34 @@ class _DetailPageState extends State<DetailPage> {
         backgroundColor: Colors.white,
       ),
       body: FooterView(
+        flex: 9,
         footer: Footer(
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.only(bottom: 100),
           child: Column(
             children: [
-              Text('wef')
+              Padding(
+                padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () async {},
+                      child: const Icon(
+                        Icons.favorite_border,
+                        size: 18,
+                        color: Colors.deepOrange,
+                      )
+                    ),
+                    const SizedBox(width: 3),
+                    Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
+                    const SizedBox(width: 10,),
+                    const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
+                    const SizedBox(width: 3),
+                    const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
+                  ],
+                ),
+              ),
+
             ],
           ),
         ),
@@ -58,7 +89,7 @@ class _DetailPageState extends State<DetailPage> {
             padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 3),
             child: Row(
               children: [
-                const Text('오늘의 기분    ', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87)),
+                const Text('오늘의 기분  ', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.black87)),
                 Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -75,7 +106,7 @@ class _DetailPageState extends State<DetailPage> {
                     height: 35,
                     width: 50,
                     child: Center(
-                        child: Text(diaryModel.feel ?? '', style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
+                      child: Text(diaryModel.feel ?? '', style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
                     )
                 ),
               ],
@@ -116,47 +147,72 @@ class _DetailPageState extends State<DetailPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Text(diaryModel.content!),
+            child: Text(diaryModel.content!, style: const TextStyle(fontSize: 16),),
+          ),
+          if(diaryModel.location != '위치를 활성화 해주세요.')(
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              child: Row(
+                children: [
+                  Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
+                  const Text(' 어딘가 에서...',style: TextStyle(fontSize: 12, color: Colors.grey),),
+                ],
+              ),
+            )
           ),
           Container(
-            height: 10,
-            color: Colors.grey[200],
-          ),
-          SizedBox(
+            color: Colors.grey[100],
             width: MediaQuery.of(context).size.width,
-            height: 250,
             child: AdmobBanner(
               adUnitId: getBannerAdUnitId()!,
               adSize: AdmobBannerSize.MEDIUM_RECTANGLE,
             ),
           ),
-          const SizedBox(
-            height: 100,
-            child: Text('wef'),
-          )
         ],
       ),
-      bottomSheet: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Container(
-            width: double.infinity,
-            color: Colors.white,
-            child: Row(
-              children: [
-                TextField(),
-                IconButton(
-                  onPressed: (){},
-                  icon: const Icon(Icons.add_box)
-                )
-              ],
+      bottomSheet: Container(
+        padding: const EdgeInsets.all(10),
+        color: Colors.white,
+        height: 80,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                margin: const EdgeInsets.only(left: 10, right: 10),
+                height: 60,
+                decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(25)),
+                child: const TextField(
+                  minLines: 1,
+                  maxLines: 3,
+                  keyboardType: TextInputType.multiline,
+                  cursorColor: Colors.black,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: '댓글을 입력해주세요.',
+                    hintStyle: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                  ),
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
             ),
-          ),
+            IconButton(
+              onPressed: (){},
+              icon: const Icon(Icons.send_rounded, size: 30, color: Colors.teal,)
+            )
+          ],
         ),
-      ),
+      )
     );
   }
 }
+
 String? getBannerAdUnitId() {
   if (Platform.isIOS) {
     return 'ca-app-pub-3940256099942544/2934735716';

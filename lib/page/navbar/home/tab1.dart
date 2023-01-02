@@ -120,9 +120,6 @@ class _Tab1State extends State<Tab1> {
                   ),
                 ),
                 const Expanded(child: SizedBox()),
-                const InkWell(
-                    child: Icon(Icons.more_vert_rounded, color: Colors.grey, size: 15,)
-                )
               ],
             ),
           ),

@@ -64,7 +64,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           ),
         ],
       ),
-      body: loginInfo.read('uid') != null ? Column(
+      body: loginInfo.read('uid') != '' ? Column(
         children: [
           Text(loginInfo.read('nickname') ?? '')
         ],

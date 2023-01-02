@@ -26,7 +26,7 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
   String location = '위치 검색중..';
   String location1 = ' 어딘가 에서...';
   String confirmText = '';
-  late String lat, lng;
+  late String lat = "37.2042" , lng = "126.864";
 
   final controller = MultiImagePickerController(
     maxImages: 10,
@@ -108,8 +108,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         );
       }else{
         List images = [];
-
         String date = '${DateTime.now().year}년 ${DateTime.now().month}월 ${DateTime.now().day}일';
+        String date1 = DateTime.now().year.toString()+DateTime.now().month.toString()+DateTime.now().day.toString();
         String uid = supabase.auth.currentUser!.id;
 
         final nickname = await supabase.from('profiles').select('nickname').eq('uid', uid);
@@ -117,10 +117,10 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
         for(final ImageFile image in controller.images){
           var uuid = const Uuid().v4();
           supabase.storage.from('storage-diary').upload(
-              'diary_image/$uid/$date/$uuid', File(image.path!)
+              'diary_image/$uid/$date1/$uuid', File(image.path!)
           );
           images.add(
-              'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/diary_image/$uid/$date/$uuid'
+              'https://pafibucbvxckinbhdgbp.supabase.co/storage/v1/object/public/storage-diary/diary_image/$uid/$date1/$uuid'
           );
         }
 
@@ -143,7 +143,8 @@ class _DiaryCreatePageState extends State<DiaryCreatePage> {
     } on PostgrestException catch (error) {
       print(error.message);
       //context.showErrorSnackBar(message: error.message);
-    } catch (_) {
+    } catch (e) {
+      print('뭔 에러여   $e');
       //context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
   }
