@@ -344,7 +344,7 @@ packages:
       name: multi_image_picker_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.8"
   naver_map_plugin:
     dependency: "direct main"
     description:
@@ -449,7 +449,7 @@ packages:
       name: realtime_client
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   retry:
     dependency: transitive
     description:

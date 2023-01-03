@@ -80,53 +80,53 @@ class _Tab1State extends State<Tab1> {
   }
 
   Widget itemBuilder(context, DiaryModel diaryModel, index) {
-      return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 25, right: 25,top: 25, bottom: 15),
-            child: Row(
-              children: [
-                Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: diaryModel.feel == '기쁨' ? Colors.red[50] :
-                      diaryModel.feel == '행복' ? Colors.yellow[50] :
-                      diaryModel.feel == '슬픔' ? Colors.blue[50] :
-                      diaryModel.feel == '우울' ? Colors.deepPurple[50] :
-                      diaryModel.feel == '분노' ? Colors.red[50] :
-                      diaryModel.feel == '후회' ? Colors.grey[100] :
-                      diaryModel.feel == '보통' ? Colors.lime[50] :
-                      diaryModel.feel == '설렘' ? Colors.orange[100]:
-                      Colors.cyan[50],
-                    ),
-                    height: 35,
-                    width: 50,
-                    child: Center(
-                        child: Text(diaryModel.feel ?? '', style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
-                    )
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(diaryModel.nickName!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),),
-                      Text(diaryModel.createDate!.toString(), style: const TextStyle(fontSize: 11, color: Colors.black54),),
-                    ],
+      return InkWell(
+        onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 25, right: 25,top: 25, bottom: 15),
+              child: Row(
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: diaryModel.feel == '기쁨' ? Colors.red[50] :
+                        diaryModel.feel == '행복' ? Colors.yellow[50] :
+                        diaryModel.feel == '슬픔' ? Colors.blue[50] :
+                        diaryModel.feel == '우울' ? Colors.deepPurple[50] :
+                        diaryModel.feel == '분노' ? Colors.red[50] :
+                        diaryModel.feel == '후회' ? Colors.grey[100] :
+                        diaryModel.feel == '보통' ? Colors.lime[50] :
+                        diaryModel.feel == '설렘' ? Colors.orange[100]:
+                        Colors.cyan[50],
+                      ),
+                      height: 35,
+                      width: 50,
+                      child: Center(
+                          child: Text(diaryModel.feel ?? '', style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 11,color: Colors.black87))
+                      )
                   ),
-                ),
-                const Expanded(child: SizedBox()),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(diaryModel.nickName!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),),
+                        Text(diaryModel.createDate!.toString(), style: const TextStyle(fontSize: 11, color: Colors.black54),),
+                      ],
+                    ),
+                  ),
+                  const Expanded(child: SizedBox()),
+                ],
+              ),
             ),
           ),
-        ),
-        if(diaryModel.images.toString() != '[]')InkWell(
-          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
-          child: Padding(
+          if(diaryModel.images.toString() != '[]')Padding(
             padding: const EdgeInsets.only(top: 5,bottom: 5),
             child: (
               CarouselSlider(
@@ -152,10 +152,7 @@ class _Tab1State extends State<Tab1> {
               )
             ),
           ),
-        ),
-        InkWell(
-          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
-          child: Padding(
+          Padding(
             padding: const EdgeInsets.only(left: 25, right: 25),
             child: Text(
               diaryModel.content!,
@@ -163,79 +160,36 @@ class _Tab1State extends State<Tab1> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-        ),
-        diaryModel.location != '위치를 활성화 해주세요.' ?
-        Padding(
-          padding: const EdgeInsets.only(top: 10, left: 25),
-          child: Row(
-            children: [
-              Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
-              const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
-            ],
-          ),
-        ): Container(),
+          diaryModel.location != '위치를 활성화 해주세요.' ?
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 25),
+            child: Row(
+              children: [
+                Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
+                const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
+              ],
+            ),
+          ): Container(),
 
-        Padding(
-          padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () async {
-                  if(supabase.auth.currentSession == null){
-                    Get.snackbar(
-                      '로그인 필요.',
-                      '로그인을 해주세요.',
-                      snackPosition: SnackPosition.BOTTOM,
-                      forwardAnimationCurve: Curves.elasticInOut,
-                      reverseAnimationCurve: Curves.easeOut,
-                    );
-                  }else{
-                    final likes = await supabase.from('diary').select('like').eq('id', diaryModel.id);
-                    final List<dynamic> like = likes[0]['like'];
-
-                    if(like.contains(supabase.auth.currentUser!.id)){
-                      like.remove(supabase.auth.currentUser!.id);
-                      List countLike = await supabase.from('diary').update({
-                        'like': like
-                      }).eq('id', diaryModel.id).select('like');
-                      print('이프 : ${countLike[0]['like']}');
-                      setState(() {
-                        likeCount = like.length;
-                        likeColors = Colors.amber;
-                      });
-                    }else{
-                      like.add(supabase.auth.currentUser!.id);
-                      final countLike = await supabase.from('diary').update({
-                        'like': like
-                      }).eq('id', diaryModel.id).select('like');
-                      print('엘스 : ${countLike[0]['like']}');
-                      int c = countLike[0]['like'].length;
-                      print(c);
-                      setState(() {
-                        likeCount = like.length;
-                        likeColors = Colors.teal;
-                      });
-                    }
-                  }
-                },
-                child: Icon(
+          Padding(
+            padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
+            child: Row(
+              children: [
+                Icon(
                   Icons.favorite_border,
                   size: 18,
                   color: likeColors,
-                )
-              ),
-              const SizedBox(width: 3),
-              Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
-              const SizedBox(width: 10,),
-              const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
-              const SizedBox(width: 3),
-              const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
-            ],
+                ),
+                const SizedBox(width: 3),
+                Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
+                const SizedBox(width: 10,),
+                const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
+                const SizedBox(width: 3),
+                const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
+              ],
+            ),
           ),
-        ),
-        InkWell(
-          onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
-          child: Padding(
+          Padding(
             padding: const EdgeInsets.only(left: 25),
             child: Row(
               children: const [
@@ -244,11 +198,11 @@ class _Tab1State extends State<Tab1> {
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 15,),
-        Container(height: 10, color: Colors.grey[100],)
-      ],
-    );
+          const SizedBox(height: 15,),
+          Container(height: 10, color: Colors.grey[100],)
+        ],
+    ),
+      );
   }
 
   @override
