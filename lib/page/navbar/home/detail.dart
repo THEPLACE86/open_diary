@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:footer/footer.dart';
-import 'package:footer/footer_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:open_diary/model/comment.dart';
@@ -221,7 +219,26 @@ class _DetailPageState extends State<DetailPage> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(comment.comment, style: TextStyle(color: Colors.deepOrange),)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Row(
+                                    children: [
+                                      Text(comment.nickname, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                                      Expanded(
+                                        child: Text(comment.createdAt.toString(), style: const TextStyle(color: Colors.black38 , fontSize: 12))
+                                      ),
+                                      IconButton(
+                                        onPressed: (){},
+                                        icon: const Icon(Icons.more_vert_rounded),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10,bottom: 10),
+                                  child: Text(comment.comment, style: const TextStyle(fontSize: 13),),
+                                ),
+                                Divider(color: Colors.grey[300])
                               ],
                             );
                           },
