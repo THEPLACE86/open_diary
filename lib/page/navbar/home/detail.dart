@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:open_diary/model/comment.dart';
@@ -47,7 +48,7 @@ class _DetailPageState extends State<DetailPage> {
           Get.snackbar(
             '댓글 입력.',
             '댓글을 입력해주세요.',
-            snackPosition: SnackPosition.TOP,
+            snackPosition: SnackPosition.BOTTOM,
             forwardAnimationCurve: Curves.elasticInOut,
             reverseAnimationCurve: Curves.easeOut,
           );
@@ -201,7 +202,7 @@ class _DetailPageState extends State<DetailPage> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
               child: StreamBuilder<List<CommentModel>>(
-                stream: Supabase.instance.client.from('comment').stream(primaryKey: ['id']).eq('diary_id', diaryModel.id).order('created_at').map((maps) =>
+                stream: Supabase.instance.client.from('comment').stream(primaryKey: ['id']).eq('diary_id', diaryModel.id).order('created_at', ascending: true).map((maps) =>
                     maps.map((map) => CommentModel.fromMap(map: map)).toList()
                 ),
                 builder: (context, snapshot){
@@ -219,23 +220,25 @@ class _DetailPageState extends State<DetailPage> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: Row(
-                                    children: [
-                                      Text(comment.nickname, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
-                                      Expanded(
-                                        child: Text(comment.createdAt.toString(), style: const TextStyle(color: Colors.black38 , fontSize: 12))
+                                Row(
+                                  children: [
+                                    Text(comment.nickname, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                                    Expanded(
+                                      child: Text('  ${comment.createdAt.toString()}', style: const TextStyle(color: Colors.black38 , fontSize: 12))
+                                    ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: SvgPicture.asset(
+                                        'assets/icon/alarm.svg',
+                                        width: 17,
+                                        height: 17,
                                       ),
-                                      IconButton(
-                                        onPressed: (){},
-                                        icon: const Icon(Icons.more_vert_rounded),
-                                      )
-                                    ],
-                                  ),
+                                    ),
+
+                                  ],
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 10,bottom: 10),
+                                  padding: const EdgeInsets.only(bottom: 10),
                                   child: Text(comment.comment, style: const TextStyle(fontSize: 13),),
                                 ),
                                 Divider(color: Colors.grey[300])

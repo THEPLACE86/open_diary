@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_diary/page/navbar/chat/chat.dart';
@@ -16,12 +17,13 @@ class MainNavBarPage extends StatefulWidget {
 
 class _MainNavBarPageState extends State<MainNavBarPage> {
 
-  int _selectedIndex = 0;
+  int tapCount = 0;
+  int selectedIndex = 0;
+
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     ChatPage(),
     NotificationPage(),
-    DiaryCreatePage(),
     MyProfilePage(),
   ];
 
@@ -30,65 +32,99 @@ class _MainNavBarPageState extends State<MainNavBarPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _widgetOptions.elementAt(selectedIndex),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
-            )
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-            child: GNav(
-              rippleColor: Colors.grey[300]!,
-              hoverColor: Colors.grey[100]!,
-              gap: 5,
-              activeColor: Colors.black,
-              iconSize: 20,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-              duration: const Duration(milliseconds: 400),
-              tabBackgroundColor: Colors.grey[100]!,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        selectedItemColor: Colors.black,
+        selectedFontSize: 11,
+        items: [
+          BottomNavigationBarItem(
+            activeIcon: SvgPicture.asset(
+              'assets/icon/home.svg',
+              width: 22,
+              height: 22,
               color: Colors.black,
-              tabs: const [
-                GButton(
-                  icon: Icons.home_outlined,
-                  text: '공개일기',
-                ),
-                GButton(
-                  icon: Icons.chat_bubble_outline_outlined,
-                  text: '대화',
-                ),
-                GButton(
-                  icon: Icons.notifications_none_rounded,
-                  text: '알림',
-                ),
-                GButton(
-                  icon: Icons.account_balance_wallet_outlined,
-                  iconActiveColor: Colors.cyan,
-                  iconColor: Colors.cyan,
-                  text: '일기쓰기',
-                ),
-                GButton(
-                  icon: Icons.person_outlined,
-                  text: '내정보',
-                ),
-              ],
-              selectedIndex: _selectedIndex,
-              onTabChange: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
             ),
+            icon: SvgPicture.asset(
+              'assets/icon/home.svg',
+              width: 22,
+              height: 22,
+              color: Colors.grey[400],
+            ),
+            label: "오픈일기"
           ),
-        ),
+          BottomNavigationBarItem(
+              activeIcon: SvgPicture.asset(
+                'assets/icon/message.svg',
+                width: 22,
+                height: 22,
+                color: Colors.black,
+              ),
+              icon: SvgPicture.asset(
+                'assets/icon/message.svg',
+                width: 22,
+                height: 22,
+                color: Colors.grey[400],
+              ),
+              label: "채팅"
+          ),
+          BottomNavigationBarItem(
+              activeIcon: SvgPicture.asset(
+                'assets/icon/notification.svg',
+                width: 22,
+                height: 22,
+                color: Colors.black,
+              ),
+              icon: SvgPicture.asset(
+                'assets/icon/notification.svg',
+                width: 22,
+                height: 22,
+                color: Colors.grey[400],
+              ),
+              label: "알림"
+          ),
+          BottomNavigationBarItem(
+            activeIcon: SvgPicture.asset(
+              'assets/icon/user.svg',
+              width: 22,
+              height: 22,
+              color: Colors.black,
+            ),
+            icon: SvgPicture.asset(
+              'assets/icon/user.svg',
+              width: 22,
+              height: 22,
+              color: Colors.grey[400],
+            ),
+            label: "내정보"
+          ),
+          BottomNavigationBarItem(
+            activeIcon: SvgPicture.asset(
+              'assets/icon/user.svg',
+              width: 22,
+              height: 22,
+              color: Colors.black,
+            ),
+            icon: SvgPicture.asset(
+              'assets/icon/user.svg',
+              width: 22,
+              height: 22,
+              color: Colors.grey[400],
+            ),
+            label: "내정보"
+          ),
+        ],
+        onTap: (int index) {
+          onTapHandler(index);
+        },
       ),
     );
+  }
+  void onTapHandler(int index)  {
+    setState(() {
+      tapCount++;
+      selectedIndex = index;
+    });
   }
 }
