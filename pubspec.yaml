@@ -52,7 +52,7 @@ dependencies:
   # latlong2:
   flutter_pagewise:
   flutter_svg:
-  iconsax:
+  timeago:
 
 dev_dependencies:
   flutter_test:

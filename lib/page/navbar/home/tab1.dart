@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:open_diary/model/diary.dart';
 import 'package:open_diary/page/navbar/home/detail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -53,8 +51,8 @@ class _Tab1State extends State<Tab1> {
   void initState(){
     myLocation();
     pageLoadController = PagewiseLoadController(
-        pageSize: 4,
-        pageFuture: (pageIndex) => getPosts(pageIndex! * 4)
+      pageSize: 4,
+      pageFuture: (pageIndex) => getPosts(pageIndex! * 4)
     );
     super.initState();
   }
@@ -165,7 +163,13 @@ class _Tab1State extends State<Tab1> {
             padding: const EdgeInsets.only(top: 10, left: 25),
             child: Row(
               children: [
-                Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
+                SvgPicture.asset(
+                  'assets/icon/location.svg',
+                  width: 16,
+                  height: 16,
+                  color: Colors.grey,
+                ),
+                Text(' ${diaryModel.location}' ?? '',style: const TextStyle(fontSize: 11, color: Colors.black38, fontWeight: FontWeight.bold),),
                 const Text(' 어딘가 에서...',style: TextStyle(fontSize: 11, color: Colors.grey),),
               ],
             ),
@@ -175,15 +179,21 @@ class _Tab1State extends State<Tab1> {
             padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
             child: Row(
               children: [
-                Icon(
-                  Icons.favorite_border,
-                  size: 18,
-                  color: likeColors,
+                SvgPicture.asset(
+                  'assets/icon/heart.svg',
+                  width: 20,
+                  height: 20,
+                  color: Colors.grey,
                 ),
                 const SizedBox(width: 3),
                 Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
                 const SizedBox(width: 10,),
-                const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
+                SvgPicture.asset(
+                  'assets/icon/message.svg',
+                  width: 20,
+                  height: 20,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 3),
                 const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
               ],

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +95,7 @@ class _DetailPageState extends State<DetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 3),
               child: Row(
@@ -164,7 +165,13 @@ class _DetailPageState extends State<DetailPage> {
                   padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                   child: Row(
                     children: [
-                      Text(diaryModel.location ?? '',style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
+                      SvgPicture.asset(
+                        'assets/icon/location.svg',
+                        width: 16,
+                        height: 16,
+                        color: Colors.grey,
+                      ),
+                      Text(' ${diaryModel.location}' ?? '',style: const TextStyle(fontSize: 12, color: Colors.black38, fontWeight: FontWeight.bold),),
                       const Text(' 어딘가 에서...',style: TextStyle(fontSize: 12, color: Colors.grey),),
                     ],
                   ),
@@ -184,16 +191,22 @@ class _DetailPageState extends State<DetailPage> {
                 children: [
                   InkWell(
                     onTap: () async {},
-                    child: const Icon(
-                      Icons.favorite_border,
-                      size: 18,
-                      color: Colors.deepOrange,
-                    )
+                    child: SvgPicture.asset(
+                      'assets/icon/heart.svg',
+                      width: 20,
+                      height: 20,
+                      color: Colors.grey,
+                    ),
                   ),
                   const SizedBox(width: 3),
                   Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
                   const SizedBox(width: 10,),
-                  const Icon(Icons.chat_bubble_outline, color: Colors.grey, size: 18),
+                  SvgPicture.asset(
+                    'assets/icon/message.svg',
+                    width: 20,
+                    height: 20,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 3),
                   const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
                 ],
@@ -208,6 +221,7 @@ class _DetailPageState extends State<DetailPage> {
                 builder: (context, snapshot){
                   if(snapshot.hasData){
                     final comments = snapshot.data!;
+
                     return Column(
                       children: [
                         if (comments.isEmpty) const Center(child: Text('댓글이 없습니다.'),)
@@ -217,6 +231,7 @@ class _DetailPageState extends State<DetailPage> {
                           itemCount: comments.length,
                           itemBuilder: (context, index){
                             final comment = comments[index];
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -224,7 +239,7 @@ class _DetailPageState extends State<DetailPage> {
                                   children: [
                                     Text(comment.nickname, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
                                     Expanded(
-                                      child: Text('  ${comment.createdAt.toString()}', style: const TextStyle(color: Colors.black38 , fontSize: 12))
+                                      child: Text('  ${timeago.format(DateTime.now().subtract(Duration(minutes: comment.createdAt.millisecond)))}', style: const TextStyle(color: Colors.black38 , fontSize: 12))
                                     ),
                                     IconButton(
                                       onPressed: () {},
@@ -295,7 +310,12 @@ class _DetailPageState extends State<DetailPage> {
                 saveComment();
                 FocusScope.of(context).unfocus();
               },
-              icon: const Icon(Icons.send_rounded, size: 30, color: Colors.teal,)
+              icon: SvgPicture.asset(
+                'assets/icon/send.svg',
+                width: 30,
+                height: 30,
+                color: Colors.teal,
+              ),
             )
           ],
         ),
