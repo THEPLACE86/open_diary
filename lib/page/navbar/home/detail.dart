@@ -26,6 +26,7 @@ class _DetailPageState extends State<DetailPage> {
   final TextEditingController txtComment = TextEditingController();
   final loginInfo = GetStorage();
   String nickname = '';
+  int commentCount = 0;
 
   @override
   void initState() {
@@ -59,6 +60,9 @@ class _DetailPageState extends State<DetailPage> {
             'nickname': loginInfo.read('nickname'),
             'diary_id': diaryModel.id,
           });
+          await supabase.from('diary').update({
+            'comment_count': commentCount + 1
+          }).eq('id', diaryModel.id);
           setState(() {
             txtComment.text = '';
           });
@@ -69,6 +73,12 @@ class _DetailPageState extends State<DetailPage> {
     } catch (e) {
       print('뭔 에러여   $e');
     }
+  }
+
+  void btnLike(List like) async {
+    final likes = await supabase.from('diary').select('like').eq('id', diaryModel.id);
+
+    print(likes[0]['like']);
   }
 
   @override
@@ -185,33 +195,7 @@ class _DetailPageState extends State<DetailPage> {
                 adSize: AdmobBannerSize.MEDIUM_RECTANGLE,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () async {},
-                    child: SvgPicture.asset(
-                      'assets/icon/heart.svg',
-                      width: 20,
-                      height: 20,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 3),
-                  Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
-                  const SizedBox(width: 10,),
-                  SvgPicture.asset(
-                    'assets/icon/message.svg',
-                    width: 20,
-                    height: 20,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(width: 3),
-                  const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
-                ],
-              ),
-            ),
+
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
               child: StreamBuilder<List<CommentModel>>(
@@ -224,14 +208,46 @@ class _DetailPageState extends State<DetailPage> {
 
                     return Column(
                       children: [
-                        if (comments.isEmpty) const Center(child: Text('댓글이 없습니다.'),)
+                        if (comments.isEmpty) const SizedBox(height: 150, child: Center(child: Text('댓글이 없습니다.'),))
                         else ListView.builder(
                           physics : const ClampingScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: comments.length,
+                          itemCount: comments.isEmpty ? 1 : comments.length + 1,
                           itemBuilder: (context, index){
+                            commentCount = comments.length;
+                            if(index == 0){
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 20, top: 15, bottom: 15),
+                                child: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: (){
+                                        btnLike(diaryModel.like!.toList());
+                                      },
+                                      child: SvgPicture.asset(
+                                        'assets/icon/heart.svg',
+                                        width: 20,
+                                        height: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(diaryModel.like!.length.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),),
+                                    const SizedBox(width: 10,),
+                                    SvgPicture.asset(
+                                      'assets/icon/message.svg',
+                                      width: 20,
+                                      height: 20,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(commentCount.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),)
+                                  ],
+                                ),
+                              );
+                            }
+                            index -= 1;
                             final comment = comments[index];
-
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

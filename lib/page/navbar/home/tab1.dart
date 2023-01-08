@@ -27,6 +27,7 @@ class _Tab1State extends State<Tab1> {
 
   Future<void> myLocation() async {
     LocationPermission permission = await Geolocator.requestPermission();
+
     bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
     if(isLocationServiceEnabled == true){
@@ -195,7 +196,7 @@ class _Tab1State extends State<Tab1> {
                   color: Colors.grey,
                 ),
                 const SizedBox(width: 3),
-                const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
+                Text(diaryModel.commentCount.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),)
               ],
             ),
           ),

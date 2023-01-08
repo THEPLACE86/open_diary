@@ -24,6 +24,7 @@ class _MainNavBarPageState extends State<MainNavBarPage> {
     HomePage(),
     ChatPage(),
     NotificationPage(),
+    DiaryCreatePage(),
     MyProfilePage(),
   ];
 

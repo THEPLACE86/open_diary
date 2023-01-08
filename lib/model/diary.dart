@@ -11,6 +11,7 @@ class DiaryModel {
   List? like;
   bool? openDiary;
   int? hit;
+  int? commentCount;
   String? createAt;
   String? nickName;
   String? createDate;
@@ -26,6 +27,7 @@ class DiaryModel {
     images = obj['images'] ?? [];
     openDiary = obj['open_diary'] ?? true;
     hit = obj['hit'] ?? 0;
+    commentCount = obj['comment_count'] ?? 0;
     createAt = obj['create_at'] ?? '';
     nickName = obj['nickname'] ?? '';
     tags = obj['tags'] ?? [];
