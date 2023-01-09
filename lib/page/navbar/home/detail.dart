@@ -95,7 +95,6 @@ class _DetailPageState extends State<DetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 3),
               child: Row(
