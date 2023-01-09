@@ -27,6 +27,7 @@ class _Tab1State extends State<Tab1> {
 
   Future<void> myLocation() async {
     LocationPermission permission = await Geolocator.requestPermission();
+
     bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
     if(isLocationServiceEnabled == true){
@@ -51,8 +52,8 @@ class _Tab1State extends State<Tab1> {
   void initState(){
     myLocation();
     pageLoadController = PagewiseLoadController(
-      pageSize: 4,
-      pageFuture: (pageIndex) => getPosts(pageIndex! * 4)
+        pageSize: 4,
+        pageFuture: (pageIndex) => getPosts(pageIndex! * 4)
     );
     super.initState();
   }
@@ -78,9 +79,9 @@ class _Tab1State extends State<Tab1> {
   }
 
   Widget itemBuilder(context, DiaryModel diaryModel, index) {
-      return InkWell(
-        onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
-        child: Column(
+    return InkWell(
+      onTap: () => Get.to(const DetailPage(), arguments: diaryModel),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -127,27 +128,27 @@ class _Tab1State extends State<Tab1> {
           if(diaryModel.images.toString() != '[]')Padding(
             padding: const EdgeInsets.only(top: 5,bottom: 5),
             child: (
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 350,
-                  enlargeCenterPage: false,
-                ),
-                items: diaryModel.images?.map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Image.network(
-                            i.toString(),
-                            fit: BoxFit.cover,
-                            height: 300,
-                          )
-                      );
-                    },
-                  );
-                }).toList(),
-              )
+                CarouselSlider(
+                  options: CarouselOptions(
+                    height: 350,
+                    enlargeCenterPage: false,
+                  ),
+                  items: diaryModel.images?.map((i) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Image.network(
+                              i.toString(),
+                              fit: BoxFit.cover,
+                              height: 300,
+                            )
+                        );
+                      },
+                    );
+                  }).toList(),
+                )
             ),
           ),
           Padding(
@@ -195,7 +196,7 @@ class _Tab1State extends State<Tab1> {
                   color: Colors.grey,
                 ),
                 const SizedBox(width: 3),
-                const Text('0', style: TextStyle(fontSize: 12, color: Colors.grey),)
+                Text(diaryModel.commentCount.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey),)
               ],
             ),
           ),
@@ -211,8 +212,8 @@ class _Tab1State extends State<Tab1> {
           const SizedBox(height: 15,),
           Container(height: 10, color: Colors.grey[100],)
         ],
-    ),
-      );
+      ),
+    );
   }
 
   @override
