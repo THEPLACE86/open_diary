@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:open_diary/page/navbar/create/diary_create.dart';
 import 'package:open_diary/page/navbar/home/home.dart';
 import 'package:open_diary/page/navbar/my_profile/my_profile.dart';
 import 'package:open_diary/page/notification/notification.dart';
@@ -22,6 +23,7 @@ class _MainNavBarPageState extends State<MainNavBarPage> {
     HomePage(),
     ChatMainPage(),
     NotificationPage(),
+    DiaryCreatePage(),
     MyProfilePage(),
   ];
 

@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:open_diary/model/chatList.dart';
 import 'package:open_diary/model/chatRoom.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart';
-
 import '../../../util/constants.dart';
 
-/// Page to chat with someone.
-///
-/// Displays chat bubbles as a ListView and TextField to enter new chat.
 class ChatRoomPage extends StatefulWidget {
   const ChatRoomPage({Key? key}) : super(key: key);
 
@@ -18,6 +17,8 @@ class ChatRoomPage extends StatefulWidget {
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
   late final Stream<List<ChatRoomModel>> _messagesStream;
+  ChatListModel chatListModel = Get.arguments;
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -44,29 +45,19 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             return Column(
               children: [
                 Expanded(
-                  child: messages.isEmpty
-                      ? const Center(
-                    child: Text('Start your conversation now :)'),
-                  )
-                      : ListView.builder(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
 
-                      /// I know it's not good to include code that is not related
-                      /// to rendering the widget inside build method, but for
-                      /// creating an app quick and dirty, it's fine 😂
-                      _loadProfileCache(message.profileId);
-
-                      return _ChatBubble(
-                        message: message,
-                        profile: _profileCache[message.profileId],
-                      );
+                      return _ChatBubble(message: message);
                     },
                   ),
                 ),
-                const _MessageBar(),
+                _MessageBar(chatList: chatListModel),
               ],
             );
           } else {
@@ -82,7 +73,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 class _MessageBar extends StatefulWidget {
   const _MessageBar({
     Key? key,
+    required this.chatList,
   }) : super(key: key);
+
+  final ChatListModel chatList;
 
   @override
   State<_MessageBar> createState() => _MessageBarState();
@@ -107,16 +101,23 @@ class _MessageBarState extends State<_MessageBar> {
                   autofocus: true,
                   controller: _textController,
                   decoration: const InputDecoration(
-                    hintText: 'Type a message',
+                    hintText: '메세지 입력',
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.all(8),
                   ),
                 ),
               ),
-              TextButton(
-                onPressed: () => _submitMessage(),
-                child: const Text('Send'),
+              IconButton(
+                onPressed: (){
+                  _submitMessage();
+                },
+                icon: SvgPicture.asset(
+                  'assets/icon/send.svg',
+                  width: 30,
+                  height: 30,
+                  color: Colors.teal,
+                ),
               ),
             ],
           ),
@@ -145,9 +146,10 @@ class _MessageBarState extends State<_MessageBar> {
     }
     _textController.clear();
     try {
-      await supabase.from('messages').insert({
-        'profile_id': myUserId,
-        'content': text,
+      await supabase.from('chat_room').insert({
+        'chat_list_id': widget.chatList.id,
+        'author': myUserId,
+        'message': text,
       });
     } on PostgrestException catch (error) {
       context.showErrorSnackBar(message: error.message);
@@ -161,20 +163,16 @@ class _ChatBubble extends StatelessWidget {
   const _ChatBubble({
     Key? key,
     required this.message,
-    required this.profile,
   }) : super(key: key);
 
-  final Message message;
-  final Profile? profile;
+  final ChatRoomModel message;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> chatContents = [
       if (!message.isMine)
         CircleAvatar(
-          child: profile == null
-              ? preloader
-              : Text(profile!.username.substring(0, 2)),
+          child: Text(message.nickname)
         ),
       const SizedBox(width: 12),
       Flexible(
@@ -189,11 +187,11 @@ class _ChatBubble extends StatelessWidget {
                 : Colors.grey[300],
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(message.content),
+          child: Text(message.message),
         ),
       ),
       const SizedBox(width: 12),
-      Text(format(message.createdAt, locale: 'en_short')),
+      Text(format(message.createdAt, locale: 'kr')),
       const SizedBox(width: 60),
     ];
     if (message.isMine) {
