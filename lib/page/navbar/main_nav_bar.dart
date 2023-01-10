@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:open_diary/page/navbar/chat/chat.dart';
-import 'package:open_diary/page/navbar/create/diary_create.dart';
 import 'package:open_diary/page/navbar/home/home.dart';
 import 'package:open_diary/page/navbar/my_profile/my_profile.dart';
 import 'package:open_diary/page/notification/notification.dart';
+
+import 'chat/chat_main.dart';
 
 class MainNavBarPage extends StatefulWidget {
   const MainNavBarPage({Key? key}) : super(key: key);
@@ -22,7 +20,7 @@ class _MainNavBarPageState extends State<MainNavBarPage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    ChatPage(),
+    ChatMainPage(),
     NotificationPage(),
     MyProfilePage(),
   ];

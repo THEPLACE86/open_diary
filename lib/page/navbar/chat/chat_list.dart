@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:open_diary/model/chatHeard.dart';
+import 'package:open_diary/model/chatList.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'chat_room.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+class ChatListPage extends StatefulWidget {
+  const ChatListPage({Key? key}) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatListPage> createState() => _ChatListPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatListPageState extends State<ChatListPage> {
   final TextEditingController titleController = TextEditingController();
   final loginInfo = GetStorage();
   final supabase = Supabase.instance.client;
@@ -53,11 +53,10 @@ class _ChatPageState extends State<ChatPage> {
             onPressed: () async {
               var uuid = const Uuid().v4();
               try {
-                final createUser = await supabase.from('chat_heard').select().eq('create_user', supabase.auth.currentUser!.id).maybeSingle();
+                final createUser = await supabase.from('chat_list').select().eq('create_user', supabase.auth.currentUser!.id).maybeSingle();
 
                 if(createUser == null){
-                  await supabase.from('chat_heard').insert({
-                    'chat_heard': uuid,
+                  await supabase.from('chat_list').insert({
                     'title': titleController.text,
                     'max_user': 5,
                     'user_list': [supabase.auth.currentUser!.id],
@@ -125,9 +124,9 @@ class _ChatPageState extends State<ChatPage> {
           ],
         ): Padding(
           padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
-          child: StreamBuilder<List<ChatHeardModel>>(
-              stream: Supabase.instance.client.from('chat_heard').stream(primaryKey: ['id']).order('created_at', ascending: true).map((maps) =>
-                  maps.map((map) => ChatHeardModel.fromMap(map: map)).toList()
+          child: StreamBuilder<List<ChatListModel>>(
+              stream: Supabase.instance.client.from('chat_list').stream(primaryKey: ['id']).order('created_at', ascending: true).map((maps) =>
+                  maps.map((map) => ChatListModel.fromMap(map: map)).toList()
               ),
               builder: (context, snapshot){
                 if(snapshot.hasData){
@@ -173,7 +172,7 @@ class _ChatPageState extends State<ChatPage> {
                                           );
                                         }else{
                                           chat.userList.add(supabase.auth.currentUser!.id);
-                                          await supabase.from('chat_heard').update({
+                                          await supabase.from('chat_list').update({
                                             'user_list': chat.userList
                                           }).eq('id', chat.id);
                                           Get.to(const ChatRoomPage(), arguments: chat);

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:open_diary/page/navbar/chat/chat_list.dart';
 import 'package:open_diary/page/navbar/home/tab1.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+import 'chat_room_list.dart';
+
+class ChatMainPage extends StatefulWidget {
+  const ChatMainPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ChatMainPage> createState() => _ChatMainPageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _ChatMainPageState extends State<ChatMainPage> with TickerProviderStateMixin {
   late TabController _nestedTabController;
 
   @override
@@ -39,19 +42,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           isScrollable: true,
           tabs: const [
             Tab(
-              text: "근처",
+              text: "채팅",
             ),
             Tab(
-              text: "인기",
-            ),
-            Tab(
-              text: "새로운",
-            ),
-            Tab(
-              text: "태그",
-            ),
-            Tab(
-              text: "Five",
+              text: "참여중인 채팅",
             ),
           ],
         ),
@@ -61,11 +55,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _nestedTabController,
               children: const [
-                Tab1(),
-                Tab1(),
-                Tab1(),
-                Tab1(),
-                Tab1(),
+                ChatListPage(),
+                ChatRoomListPage(),
               ],
             ),
           ),

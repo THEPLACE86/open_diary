@@ -1,5 +1,5 @@
-class ChatHeardModel {
-  ChatHeardModel({
+class ChatListModel {
+  ChatListModel({
     required this.id,
     required this.createUser,
     required this.title,
@@ -17,7 +17,7 @@ class ChatHeardModel {
   final List userList;
   final int maxUser;
 
-  ChatHeardModel.fromMap({
+  ChatListModel.fromMap({
     required Map<String, dynamic> map
   })  : id = map['id'],
       createUser = map['create_user'],
