@@ -53,6 +53,7 @@ dependencies:
   flutter_pagewise:
   flutter_svg:
   timeago:
+  flutter_chat_bubble:
 
 dev_dependencies:
   flutter_test:
