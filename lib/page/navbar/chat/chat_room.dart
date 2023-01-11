@@ -1,8 +1,7 @@
 import 'dart:async';
+import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_bubble/bubble_type.dart';
-import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_5.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:open_diary/model/chatList.dart';
@@ -93,37 +92,31 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                         final message = messages[index];
 
                         return Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 15),
-                          child: ChatBubble(
-                            alignment: message.isMine ? Alignment.topRight : Alignment.topLeft,
-                            clipper: ChatBubbleClipper5(
-                              type: message.isMine ? BubbleType.sendBubble : BubbleType.receiverBubble,
-                              radius: 15,
-                              secondRadius: 15,
-                            ),
-                            margin: const EdgeInsets.only(top: 20),
-                            backGroundColor: message.isMine ? Colors.blue : Colors.grey[100],
-                            child: message.isMine ? Container(
-                              padding: const EdgeInsets.all(4),
-                              constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width * 0.7,
-                              ),
-                              child: Text(message.message, style: const TextStyle(color: Colors.white),
-                              ),
-                            ) : Row(
-                              children: [
-                                Text('wef'),
-                                Container(
-                                  padding: const EdgeInsets.all(4),
-                                  constraints: BoxConstraints(
-                                    maxWidth: MediaQuery.of(context).size.width * 0.7,
-                                  ),
-                                  child: Text(message.message, style: const TextStyle(color: Colors.black),
-                                  ),
+                          padding: const EdgeInsets.only(left: 10, right: 5),
+                          child: Row(
+                            mainAxisAlignment: message.isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:  [
+                              message.isMine ? Container() : const SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.teal,
+                                  radius: 250,
+                                  backgroundImage: AssetImage("assets/icon/a.jpeg"),
                                 ),
-                              ],
-                            )
-                          ),
+                              ),
+                              BubbleSpecialThree(
+                                text: message.message,
+                                color: message.isMine ? Colors.teal : const Color(0xFFEEEEEE),
+                                tail: false,
+                                textStyle: TextStyle(
+                                  color: message.isMine ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              Text(format(message.createdAt))
+                            ],
+                          )
                         );
                       },
                     ),

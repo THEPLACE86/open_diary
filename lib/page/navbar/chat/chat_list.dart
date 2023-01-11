@@ -101,123 +101,116 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('채팅', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black),),
-          centerTitle: false,
-          elevation: 0,
-          backgroundColor: Colors.white,
-          actions: [
-            IconButton(
-              onPressed: () => createChat(),
-              icon: SvgPicture.asset(
-                'assets/icon/add.svg',
-                width: 25,
-                height: 25,
-                color: Colors.teal,
-              ),
-            )
-          ],
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.teal[100],
+        onPressed: () => createChat(),
+        child: SvgPicture.asset(
+          'assets/icon/add.svg',
+          width: 25,
+          height: 25,
+          color: Colors.black,
         ),
-        body: supabase.auth.currentSession == null ? Column(
-          children: const [
-            Text('로그인')
-          ],
-        ): Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
-          child: StreamBuilder<List<ChatListModel>>(
-              stream: Supabase.instance.client.from('chat_list').stream(primaryKey: ['id']).order('created_at', ascending: true).map((maps) =>
-                  maps.map((map) => ChatListModel.fromMap(map: map)).toList()
-              ),
-              builder: (context, snapshot){
-                if(snapshot.hasData){
-                  final chatHeard = snapshot.data!;
+      ),
+      body: supabase.auth.currentSession == null ? Column(
+        children: const [
+          Text('로그인')
+        ],
+      ): Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
+        child: StreamBuilder<List<ChatListModel>>(
+            stream: Supabase.instance.client.from('chat_list').stream(primaryKey: ['id']).order('created_at', ascending: true).map((maps) =>
+                maps.map((map) => ChatListModel.fromMap(map: map)).toList()
+            ),
+            builder: (context, snapshot){
+              if(snapshot.hasData){
+                final chatHeard = snapshot.data!;
 
-                  return Column(
-                    children: [
-                      if (chatHeard.isEmpty) const Center(child: Text('채팅방이 없습니다.'),)
-                      else ListView.builder(
-                        physics : const ClampingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: chatHeard.length,
-                        itemBuilder: (context, index){
-                          final chat = chatHeard[index];
-                          return InkWell(
-                            onTap: (){
-                              Get.dialog(
-                                AlertDialog(
-                                  title: const Text('채팅방 참여하기'),
-                                  content: SizedBox(
-                                    height: 200,
-                                    child: Column(
-                                      children: const [
-                                        Text('참여하기')
-                                      ],
+                return Column(
+                  children: [
+                    if (chatHeard.isEmpty) const Center(child: Text('채팅방이 없습니다.'),)
+                    else ListView.builder(
+                      physics : const ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: chatHeard.length,
+                      itemBuilder: (context, index){
+                        final chat = chatHeard[index];
+                        return InkWell(
+                          onTap: (){
+                            Get.dialog(
+                              AlertDialog(
+                                title: const Text('채팅방 참여하기'),
+                                content: SizedBox(
+                                  height: 200,
+                                  child: Column(
+                                    children: const [
+                                      Text('참여하기')
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: const Text("취소"),
+                                    onPressed: () => Get.back(),
+                                  ),
+                                  TextButton(
+                                    child: const Text("참여하기"),
+                                    onPressed: () async {
+                                      if(chat.userList.length == chat.maxUser){
+                                        Get.snackbar(
+                                          '채팅방 입장 불가능.',
+                                          '입장가능한 인원이 초가되었습니다.',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          forwardAnimationCurve: Curves.elasticInOut,
+                                          reverseAnimationCurve: Curves.easeOut,
+                                        );
+                                      }else{
+                                        chat.userList.add(supabase.auth.currentUser!.id);
+                                        await supabase.from('chat_list').update({
+                                          'user_list': chat.userList
+                                        }).eq('id', chat.id);
+                                        Get.to(const ChatRoomPage(), arguments: chat);
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(chat.createNickName, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                                  Expanded(
+                                      child: Text('  ${timeago.format(DateTime.now().subtract(Duration(minutes: chat.createdAt.millisecond)))}', style: const TextStyle(color: Colors.black38 , fontSize: 12))
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/alarm.svg',
+                                      width: 17,
+                                      height: 17,
                                     ),
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text("취소"),
-                                      onPressed: () => Get.back(),
-                                    ),
-                                    TextButton(
-                                      child: const Text("참여하기"),
-                                      onPressed: () async {
-                                        if(chat.userList.length == chat.maxUser){
-                                          Get.snackbar(
-                                            '채팅방 입장 불가능.',
-                                            '입장가능한 인원이 초가되었습니다.',
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            forwardAnimationCurve: Curves.elasticInOut,
-                                            reverseAnimationCurve: Curves.easeOut,
-                                          );
-                                        }else{
-                                          chat.userList.add(supabase.auth.currentUser!.id);
-                                          await supabase.from('chat_list').update({
-                                            'user_list': chat.userList
-                                          }).eq('id', chat.id);
-                                          Get.to(const ChatRoomPage(), arguments: chat);
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(chat.createNickName, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
-                                    Expanded(
-                                        child: Text('  ${timeago.format(DateTime.now().subtract(Duration(minutes: chat.createdAt.millisecond)))}', style: const TextStyle(color: Colors.black38 , fontSize: 12))
-                                    ),
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: SvgPicture.asset(
-                                        'assets/icon/alarm.svg',
-                                        width: 17,
-                                        height: 17,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(chat.title, style: const TextStyle(fontSize: 13),),
-                                Text('${chat.userList.length}/${chat.maxUser}', style: const TextStyle(fontSize: 13),),
-                                Divider(color: Colors.grey[300])
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    ],
-                  );
-                }else{
-                  return const Center(child: CircularProgressIndicator());
-                }
+                                ],
+                              ),
+                              Text(chat.title, style: const TextStyle(fontSize: 13),),
+                              Text('${chat.userList.length}/${chat.maxUser}', style: const TextStyle(fontSize: 13),),
+                              Divider(color: Colors.grey[300])
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                );
+              }else{
+                return const Center(child: CircularProgressIndicator());
               }
-          ),
+            }
         ),
+      ),
     );
   }
 }
