@@ -54,6 +54,12 @@ dependencies:
   flutter_svg:
   timeago:
   chat_bubbles:
+  image_picker:
+  path_provider:
+  material_dialogs:
+
+  firebase_core:
+  firebase_analytics:
 
 dev_dependencies:
   flutter_test:

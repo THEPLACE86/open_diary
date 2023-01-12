@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:open_diary/model/chatList.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -22,80 +26,108 @@ class _ChatListPageState extends State<ChatListPage> {
   final supabase = Supabase.instance.client;
 
   void createChat() async {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('채팅방 생성'),
-        content: SizedBox(
-          height: 200,
-          child: Column(
-            children: [
-              TextField(
-                maxLines: 1,
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: '제목',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                keyboardType: TextInputType.multiline,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text("취소"),
-            onPressed: () => Get.back(),
-          ),
-          TextButton(
-            child: const Text("생성"),
-            onPressed: () async {
-              var uuid = const Uuid().v4();
-              try {
-                final createUser = await supabase.from('chat_list').select().eq('create_user', supabase.auth.currentUser!.id).maybeSingle();
 
-                if(createUser == null){
-                  await supabase.from('chat_list').insert({
-                    'title': titleController.text,
-                    'max_user': 5,
-                    'user_list': [supabase.auth.currentUser!.id],
-                    'create_user': supabase.auth.currentUser!.id
-                  });
-                  Get.back();
-                }else{
-                  Get.back();
-                  Get.snackbar(
-                    '채팅방 중복생성',
-                    '2개이상 채팅방을 생성할수 없습니다.',
-                    snackPosition: SnackPosition.BOTTOM,
-                    forwardAnimationCurve: Curves.elasticInOut,
-                    reverseAnimationCurve: Curves.easeOut,
-                  );
-                }
-              } on PostgrestException catch (error) {
-                print(error.message);
-                Get.snackbar(
-                  'Error.',
-                  error.message,
-                  snackPosition: SnackPosition.BOTTOM,
-                  forwardAnimationCurve: Curves.elasticInOut,
-                  reverseAnimationCurve: Curves.easeOut,
-                );
-              } catch (_) {
-                Get.snackbar(
-                  'Error.',
-                  '다시 실행해주세요',
-                  snackPosition: SnackPosition.BOTTOM,
-                  forwardAnimationCurve: Curves.elasticInOut,
-                  reverseAnimationCurve: Curves.easeOut,
-                );
-              }
+    Dialogs.materialDialog(
+        msg: 'Are you sure ? you can\'t undo this',
+        title: "Delete",
+        color: Colors.white,
+        context: context,
+        dialogWidth: kIsWeb ? 0.3 : null,
+        onClose: (value) => print("returned value is '$value'"),
+        actions: [
+          IconsOutlineButton(
+            onPressed: () {
+              Navigator.of(context).pop(['Test', 'List']);
             },
+            text: 'Cancel',
+            iconData: Icons.cancel_outlined,
+            textStyle: TextStyle(color: Colors.grey),
+            iconColor: Colors.grey,
           ),
-        ],
-      ),
-    );
+          IconsButton(
+            onPressed: () {},
+            text: "Delete",
+            iconData: Icons.delete,
+            color: Colors.red,
+            textStyle: TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
+
+    // Get.dialog(
+    //   AlertDialog(
+    //     title: const Text('채팅방 생성'),
+    //     content: SizedBox(
+    //       height: 200,
+    //       child: Column(
+    //         children: [
+    //           TextField(
+    //             maxLines: 1,
+    //             controller: titleController,
+    //             decoration: const InputDecoration(
+    //               labelText: '제목',
+    //               border: OutlineInputBorder(
+    //                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    //               ),
+    //             ),
+    //             keyboardType: TextInputType.multiline,
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //     actions: [
+    //       TextButton(
+    //         child: const Text("취소"),
+    //         onPressed: () => Get.back(),
+    //       ),
+    //       TextButton(
+    //         child: const Text("생성"),
+    //         onPressed: () async {
+    //           var uuid = const Uuid().v4();
+    //           try {
+    //             final createUser = await supabase.from('chat_list').select().eq('create_user', supabase.auth.currentUser!.id).maybeSingle();
+    //
+    //             if(createUser == null){
+    //               await supabase.from('chat_list').insert({
+    //                 'title': titleController.text,
+    //                 'max_user': 5,
+    //                 'user_list': [supabase.auth.currentUser!.id],
+    //                 'create_user': supabase.auth.currentUser!.id
+    //               });
+    //               Get.back();
+    //             }else{
+    //               Get.back();
+    //               Get.snackbar(
+    //                 '채팅방 중복생성',
+    //                 '2개이상 채팅방을 생성할수 없습니다.',
+    //                 snackPosition: SnackPosition.BOTTOM,
+    //                 forwardAnimationCurve: Curves.elasticInOut,
+    //                 reverseAnimationCurve: Curves.easeOut,
+    //               );
+    //             }
+    //           } on PostgrestException catch (error) {
+    //             print(error.message);
+    //             Get.snackbar(
+    //               'Error.',
+    //               error.message,
+    //               snackPosition: SnackPosition.BOTTOM,
+    //               forwardAnimationCurve: Curves.elasticInOut,
+    //               reverseAnimationCurve: Curves.easeOut,
+    //             );
+    //           } catch (_) {
+    //             Get.snackbar(
+    //               'Error.',
+    //               '다시 실행해주세요',
+    //               snackPosition: SnackPosition.BOTTOM,
+    //               forwardAnimationCurve: Curves.elasticInOut,
+    //               reverseAnimationCurve: Curves.easeOut,
+    //             );
+    //           }
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override

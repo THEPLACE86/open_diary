@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>683307623579-83cvts074gh8t914fvjv7dg81nf9i0u5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.683307623579-83cvts074gh8t914fvjv7dg81nf9i0u5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCk7lOnf6872hGCM9wKLhgxq20AQc8UF3Q</string>
+	<key>GCM_SENDER_ID</key>
+	<string>683307623579</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.theplace.opendiary.openDiary</string>
+	<key>PROJECT_ID</key>
+	<string>opendiary-3af59</string>
+	<key>STORAGE_BUCKET</key>
+	<string>opendiary-3af59.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:683307623579:ios:e6ff12f87da0860eca923e</string>
+</dict>
+</plist>

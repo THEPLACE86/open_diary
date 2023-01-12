@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "683307623579",
+    "project_id": "opendiary-3af59",
+    "storage_bucket": "opendiary-3af59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683307623579:android:733193967b1e380bca923e",
+        "android_client_info": {
+          "package_name": "com.theplace.open_diary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683307623579-pio9ig46hf2br5estg5l2vad547kb3qo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCALt8BOtjRz2Bgx3BJv0iKwGFBN5N64mU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683307623579-pio9ig46hf2br5estg5l2vad547kb3qo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
